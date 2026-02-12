@@ -2,7 +2,7 @@ Steps to Run in IntelliJ
 
 1. Open the project:                                                                              
    File → Open → Select: /Users/jasonhession/Documents/SEM2_YEAR4/CS4135_Software_Design_and_Architec
-   ture/Project/campus2connect/services/auth-service
+   ture/Project/campus2company/services/auth-service
 
 2. Start PostgreSQL (required first):                                                             
    cd /Users/jasonhession/Documents/SEM2_YEAR4/CS4135_Software_Design_and_Architecture/Project/campus

@@ -11,11 +11,11 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.campus2connect</groupId>
+    <groupId>com.campus2company</groupId>
     <artifactId>auth-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>auth-service</name>
-    <description>Authentication service for Campus2Connect platform</description>
+    <description>Authentication service for Campus2Company platform</description>
 
     <properties>
         <java.version>21</java.version>

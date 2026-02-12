@@ -53,5 +53,5 @@ cors:
 # Logging
 logging:
   level:
-    com.campus2connect.auth: DEBUG
+    com.campus2company.auth: DEBUG
     org.springframework.security: DEBUG

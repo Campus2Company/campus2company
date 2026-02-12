@@ -6,4 +6,4 @@ spring:
 # Enable admin seeding in dev
 logging:
   level:
-    com.campus2connect.auth: DEBUG
+    com.campus2company.auth: DEBUG
