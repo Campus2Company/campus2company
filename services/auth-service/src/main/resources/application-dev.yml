@@ -1,0 +1,9 @@
+# Development profile configuration
+spring:
+  profiles:
+    active: dev
+
+# Enable admin seeding in dev
+logging:
+  level:
+    com.campus2connect.auth: DEBUG
