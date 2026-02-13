@@ -23,5 +23,5 @@ This starts just the database container on port 5432.
   /admin/users/{id}/suspend, etc.))
 
 Once running:
-- API: http://localhost:8081
-- Swagger UI: http://localhost:8081/swagger-ui.html
+- API: http://localhost:8080
+- Swagger UI: http://localhost:8080/swagger-ui.html

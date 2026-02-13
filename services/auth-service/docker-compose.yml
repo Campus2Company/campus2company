@@ -5,7 +5,7 @@ services:
     image: postgres:16-alpine
     container_name: auth-db
     environment:
-      POSTGRES_DB: auth_db
+      POSTGRES_DB: campus2company
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -28,7 +28,7 @@ services:
         condition: service_healthy
     environment:
       # Database configuration
-      DB_URL: jdbc:postgresql://auth-db:5432/auth_db
+      DB_URL: jdbc:postgresql://auth-db:5432/campus2company
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       # JWT configuration

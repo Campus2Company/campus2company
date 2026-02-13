@@ -6,9 +6,9 @@ spring:
     name: auth-service
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/auth_db}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -22,8 +22,8 @@ spring:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET:default-dev-secret-key-change-in-production-must-be-at-least-256-bits}
-  expiry-minutes: ${JWT_EXPIRY_MINUTES:60}
+  secret: ${JWT_SECRET}
+  expiry-minutes: ${JWT_EXPIRY_MINUTES}
 
 # Actuator
 management:
