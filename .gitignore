@@ -1,0 +1,47 @@
+# Java
+*.class
+*.jar
+*.war
+target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+api-gateway/.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+
+# Environment
+.env
+*/.env
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (for frontend)
+node_modules/
+dist/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Spring
+HELP.md
