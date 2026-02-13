@@ -1,0 +1,98 @@
+# Remove the comments to enable the services.
+services:
+  api-gateway:
+    build:
+      context: ../api-gateway
+    image: api-gateway:latest
+    container_name: api-gateway
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+
+  auth-service:
+    build:
+      context: ../services/auth-service
+    image: auth-service:latest
+    container_name: auth-service
+    env_file:
+      - .env
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+
+#  user-service:
+#    build:
+#      context: ../services/user-service
+#    image: user-service:latest
+#    container_name: user-service
+#    env_file:
+#      - .env
+#    ports:
+#      - "8082:8080"
+#    depends_on:
+#      - postgres
+#
+#  message-service:
+#    build:
+#      context: ../services/message-service
+#    image: message-service:latest
+#    container_name: message-service
+#    env_file:
+#      - .env
+#    ports:
+#      - "8083:8080"
+#    depends_on:
+#      - postgres
+#
+#  notification-service:
+#    build:
+#      context: ../services/notification-service
+#    image: notification-service:latest
+#    container_name: notification-service
+#    env_file:
+#      - .env
+#    ports:
+#      - "8084:8080"
+#    depends_on:
+#      - postgres
+#
+#  project-service:
+#    build:
+#      context: ../services/project-service
+#    image: project-service:latest
+#    container_name: project-service
+#    env_file:
+#      - .env
+#    ports:
+#      - "8085:8080"
+#    depends_on:
+#      - postgres
+#
+#  application-service:
+#    build:
+#      context: ../services/application-service
+#    image: application-service:latest
+#    container_name: application-service
+#    env_file:
+#      - .env
+#    ports:
+#      - "8086:8080"
+#    depends_on:
+#      - postgres
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_DB: campus2company
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
