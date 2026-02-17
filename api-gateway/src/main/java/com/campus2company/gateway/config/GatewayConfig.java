@@ -12,22 +12,22 @@ public class GatewayConfig {
     public RouteLocator routes(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("auth-service", r -> r
-                        .path("/api/auth/**")
+                        .path("/auth/**")
                         .uri("http://auth-service:8080"))
                 .route("user-service", r -> r
-                        .path("/api/users/**")
+                        .path("/users/**")
                         .uri("http://user-service:8080"))
                 .route("message-service", r -> r
-                        .path("/api/messages/**")
+                        .path("/messages/**")
                         .uri("http://message-service:8080"))
                 .route("notification-service", r -> r
-                        .path("/api/notifications/**")
+                        .path("/notifications/**")
                         .uri("http://notification-service:8080"))
                 .route("project-service", r -> r
-                        .path("/api/projects/**")
+                        .path("/projects/**")
                         .uri("http://project-service:8080"))
                 .route("application-service", r -> r
-                        .path("/api/applications/**")
+                        .path("/applications/**")
                         .uri("http://application-service:8080"))
                 .build();
     }
