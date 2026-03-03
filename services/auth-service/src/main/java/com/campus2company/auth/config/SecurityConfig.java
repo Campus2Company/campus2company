@@ -40,8 +40,8 @@ public class SecurityConfig {
                         ).permitAll()
                         // Actuator endpoints
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
-                        // Admin endpoints - require ADMIN role
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // Admin endpoints - require PLATFORM_ADMIN role
+                        .requestMatchers("/admin/**").hasRole("PLATFORM_ADMIN")
                         // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
