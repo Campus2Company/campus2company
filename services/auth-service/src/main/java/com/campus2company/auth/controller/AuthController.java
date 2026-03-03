@@ -30,7 +30,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user",
-            description = "Register a new STUDENT, COMPANY, or UNIVERSITY account. ADMIN registration is blocked.")
+            description = "Register a new STUDENT, EMPLOYER, LECTURER, or UNIVERSITY_ADMIN account. PLATFORM_ADMIN registration is blocked.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "User registered successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),

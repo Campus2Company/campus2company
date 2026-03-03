@@ -1,5 +1,10 @@
-# Remove the comments to enable the services.
+# Campus2Company - Docker Compose
+# Database-per-service pattern
+# To enable a service: uncomment both the service AND its database together
+
 services:
+
+  # ── API Gateway ────────────────────────────────────────────────
   api-gateway:
     build:
       context: ../api-gateway
@@ -9,7 +14,10 @@ services:
       - .env
     ports:
       - "8080:8080"
+    depends_on:
+      - auth-service
 
+  # ── Auth Service + Database ────────────────────────────────────
   auth-service:
     build:
       context: ../services/auth-service
@@ -17,11 +25,32 @@ services:
     container_name: auth-service
     env_file:
       - .env
+    environment:
+      - DB_URL=jdbc:postgresql://auth-db:5432/auth_db
     ports:
       - "8081:8080"
     depends_on:
-      - postgres
+      auth-db:
+        condition: service_healthy
 
+  auth-db:
+    image: postgres:16
+    container_name: auth-db
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d auth_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── User Service + Database ────────────────────────────────────
 #  user-service:
 #    build:
 #      context: ../services/user-service
@@ -29,35 +58,32 @@ services:
 #    container_name: user-service
 #    env_file:
 #      - .env
+#    environment:
+#      - DB_URL=jdbc:postgresql://user-db:5432/user_db
 #    ports:
 #      - "8082:8080"
 #    depends_on:
-#      - postgres
+#      user-db:
+#        condition: service_healthy
 #
-#  message-service:
-#    build:
-#      context: ../services/message-service
-#    image: message-service:latest
-#    container_name: message-service
-#    env_file:
-#      - .env
+#  user-db:
+#    image: postgres:16
+#    container_name: user-db
+#    environment:
+#      POSTGRES_DB: user_db
+#      POSTGRES_USER: ${DB_USERNAME}
+#      POSTGRES_PASSWORD: ${DB_PASSWORD}
 #    ports:
-#      - "8083:8080"
-#    depends_on:
-#      - postgres
-#
-#  notification-service:
-#    build:
-#      context: ../services/notification-service
-#    image: notification-service:latest
-#    container_name: notification-service
-#    env_file:
-#      - .env
-#    ports:
-#      - "8084:8080"
-#    depends_on:
-#      - postgres
-#
+#      - "5433:5432"
+#    volumes:
+#      - user_db_data:/var/lib/postgresql/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d user_db"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+
+  # ── Project Service + Database ─────────────────────────────────
 #  project-service:
 #    build:
 #      context: ../services/project-service
@@ -65,11 +91,32 @@ services:
 #    container_name: project-service
 #    env_file:
 #      - .env
+#    environment:
+#      - DB_URL=jdbc:postgresql://project-db:5432/project_db
 #    ports:
-#      - "8085:8080"
+#      - "8083:8080"
 #    depends_on:
-#      - postgres
+#      project-db:
+#        condition: service_healthy
 #
+#  project-db:
+#    image: postgres:16
+#    container_name: project-db
+#    environment:
+#      POSTGRES_DB: project_db
+#      POSTGRES_USER: ${DB_USERNAME}
+#      POSTGRES_PASSWORD: ${DB_PASSWORD}
+#    ports:
+#      - "5434:5432"
+#    volumes:
+#      - project_db_data:/var/lib/postgresql/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d project_db"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+
+  # ── Application Service + Database ────────────────────────────
 #  application-service:
 #    build:
 #      context: ../services/application-service
@@ -77,22 +124,101 @@ services:
 #    container_name: application-service
 #    env_file:
 #      - .env
+#    environment:
+#      - DB_URL=jdbc:postgresql://application-db:5432/application_db
+#    ports:
+#      - "8084:8080"
+#    depends_on:
+#      application-db:
+#        condition: service_healthy
+#
+#  application-db:
+#    image: postgres:16
+#    container_name: application-db
+#    environment:
+#      POSTGRES_DB: application_db
+#      POSTGRES_USER: ${DB_USERNAME}
+#      POSTGRES_PASSWORD: ${DB_PASSWORD}
+#    ports:
+#      - "5435:5432"
+#    volumes:
+#      - application_db_data:/var/lib/postgresql/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d application_db"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+
+  # ── Messaging Service + Database ───────────────────────────────
+#  messaging-service:
+#    build:
+#      context: ../services/messaging-service
+#    image: messaging-service:latest
+#    container_name: messaging-service
+#    env_file:
+#      - .env
+#    environment:
+#      - DB_URL=jdbc:postgresql://messaging-db:5432/messaging_db
+#    ports:
+#      - "8085:8080"
+#    depends_on:
+#      messaging-db:
+#        condition: service_healthy
+#
+#  messaging-db:
+#    image: postgres:16
+#    container_name: messaging-db
+#    environment:
+#      POSTGRES_DB: messaging_db
+#      POSTGRES_USER: ${DB_USERNAME}
+#      POSTGRES_PASSWORD: ${DB_PASSWORD}
+#    ports:
+#      - "5436:5432"
+#    volumes:
+#      - messaging_db_data:/var/lib/postgresql/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d messaging_db"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+
+  # ── Notification Service + Database ───────────────────────────
+#  notification-service:
+#    build:
+#      context: ../services/notification-service
+#    image: notification-service:latest
+#    container_name: notification-service
+#    env_file:
+#      - .env
+#    environment:
+#      - DB_URL=jdbc:postgresql://notification-db:5432/notification_db
 #    ports:
 #      - "8086:8080"
 #    depends_on:
-#      - postgres
-
-  postgres:
-    image: postgres:16
-    container_name: postgres
-    environment:
-      POSTGRES_DB: campus2company
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+#      notification-db:
+#        condition: service_healthy
+#
+#  notification-db:
+#    image: postgres:16
+#    container_name: notification-db
+#    environment:
+#      POSTGRES_DB: notification_db
+#      POSTGRES_USER: ${DB_USERNAME}
+#      POSTGRES_PASSWORD: ${DB_PASSWORD}
+#    ports:
+#      - "5437:5432"
+#    volumes:
+#      - notification_db_data:/var/lib/postgresql/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d notification_db"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
 
 volumes:
-  postgres_data:
+  auth_db_data:
+  user_db_data:
+  project_db_data:
+  application_db_data:
+  messaging_db_data:
+  notification_db_data:
