@@ -31,15 +31,15 @@ public class UserAccountService {
     }
 
     @Transactional
-    public UserAccount approveCompany(UUID userId) {
+    public UserAccount approveEmployer(UUID userId) {
         UserAccount user = findById(userId);
 
-        if (user.getRole() != Role.COMPANY || user.getStatus() != AccountStatus.PENDING_APPROVAL) {
+        if (user.getRole() != Role.EMPLOYER || user.getStatus() != AccountStatus.PENDING_APPROVAL) {
             throw InvalidStatusTransitionException.forApproval(user.getRole(), user.getStatus());
         }
 
         user.setStatus(AccountStatus.ACTIVE);
-        log.info("Company account approved: {}", user.getEmail());
+        log.info("Employer account approved: {}", user.getEmail());
         return userAccountRepository.save(user);
     }
 

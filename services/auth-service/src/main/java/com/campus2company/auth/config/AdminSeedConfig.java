@@ -48,7 +48,7 @@ public class AdminSeedConfig {
             UserAccount admin = UserAccount.builder()
                     .email(adminEmail)
                     .passwordHash(passwordEncoder.encode("admin123")) // Change in production!
-                    .role(Role.ADMIN)
+                    .role(Role.PLATFORM_ADMIN)
                     .status(AccountStatus.ACTIVE)
                     .build();
 

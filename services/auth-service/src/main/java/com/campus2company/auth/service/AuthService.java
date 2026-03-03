@@ -26,8 +26,8 @@ public class AuthService {
 
     @Transactional
     public UserResponse register(RegisterRequest request) {
-        // Block admin registration through API
-        if (request.getRole() == Role.ADMIN) {
+        // Block platform admin registration through public API
+        if (request.getRole() == Role.PLATFORM_ADMIN) {
             throw new AdminRegistrationNotAllowedException();
         }
 
@@ -79,9 +79,9 @@ public class AuthService {
 
     private AccountStatus determineInitialStatus(Role role) {
         return switch (role) {
-            case STUDENT, UNIVERSITY -> AccountStatus.ACTIVE;
-            case COMPANY -> AccountStatus.PENDING_APPROVAL;
-            case ADMIN -> AccountStatus.ACTIVE; // Won't reach here due to validation
+            case STUDENT, LECTURER, UNIVERSITY_ADMIN -> AccountStatus.ACTIVE;
+            case EMPLOYER -> AccountStatus.PENDING_APPROVAL;
+            case PLATFORM_ADMIN -> AccountStatus.ACTIVE; // Won't reach here due to validation
         };
     }
 }

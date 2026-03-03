@@ -17,26 +17,26 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('PLATFORM_ADMIN')")
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Admin", description = "Administrative endpoints for user account management")
 public class AdminController {
 
     private final UserAccountService userAccountService;
 
-    @PutMapping("/companies/{userId}/approve")
-    @Operation(summary = "Approve a company account",
-            description = "Sets a COMPANY account status from PENDING_APPROVAL to ACTIVE. " +
-                    "Only works for COMPANY role accounts that are currently pending.")
+    @PutMapping("/employers/{userId}/approve")
+    @Operation(summary = "Approve an employer account",
+            description = "Sets an EMPLOYER account status from PENDING_APPROVAL to ACTIVE. " +
+                    "Only works for EMPLOYER role accounts that are currently pending.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Company approved successfully"),
+            @ApiResponse(responseCode = "200", description = "Employer approved successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid status transition"),
             @ApiResponse(responseCode = "401", description = "Not authenticated"),
-            @ApiResponse(responseCode = "403", description = "Not authorized (requires ADMIN role)"),
+            @ApiResponse(responseCode = "403", description = "Not authorized (requires PLATFORM_ADMIN role)"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<UserResponse> approveCompany(@PathVariable UUID userId) {
-        UserResponse response = UserResponse.from(userAccountService.approveCompany(userId));
+    public ResponseEntity<UserResponse> approveEmployer(@PathVariable UUID userId) {
+        UserResponse response = UserResponse.from(userAccountService.approveEmployer(userId));
         return ResponseEntity.ok(response);
     }
 
