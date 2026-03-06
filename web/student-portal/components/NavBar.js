@@ -2,10 +2,21 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';  // Replace useRouter
+import { useAuth } from '../context/AuthContext';
 
 export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();  // New hook
+  // context values (fallbacks defined later)
+  let openLogin;
+  let openSignup;
+  try {
+    const auth = useAuth();
+    openLogin = auth.openLogin;
+    openSignup = auth.openSignup;
+  } catch (e) {
+    // context may not be available
+  }
 
   // close menu when clicking outside (unchanged)
   useEffect(() => {
@@ -52,17 +63,25 @@ export default function NavBar() {
           {/* remove when real pages are implemented */}
         </ul>
         <div className="nav-auth">
-          {/* Buttons unchanged */}
+          {/* prefer context if available, fall back to globals */}
           <button className="btn-text" id="loginBtn" onClick={() => {
-            if (typeof window !== 'undefined' && window.openLoginModal) {
-              window.openLoginModal();
+            const auth = typeof window !== 'undefined' ? window : null;
+            if (auth && auth.openLoginModal) {
+              auth.openLoginModal();
+            } else if (useAuth) {
+              const { openLogin } = useAuth();
+              openLogin && openLogin();
             }
           }}>
             Login
           </button>
           <button className="btn-primary" id="signupBtn" onClick={() => {
-            if (typeof window !== 'undefined' && window.openSignupModal) {
-              window.openSignupModal();
+            const auth = typeof window !== 'undefined' ? window : null;
+            if (auth && auth.openSignupModal) {
+              auth.openSignupModal();
+            } else if (useAuth) {
+              const { openSignup } = useAuth();
+              openSignup && openSignup();
             }
           }}>
             Sign Up
