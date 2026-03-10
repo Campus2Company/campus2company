@@ -3,9 +3,9 @@ FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
 # Copy Maven wrapper and pom.xml
-COPY auth-service/mvnw .
-COPY auth-service/.mvn .mvn
-COPY auth-service/pom.xml .
+COPY student-service/mvnw .
+COPY student-service/.mvn .mvn
+COPY student-service/pom.xml .
 
 # Install common-lib first
 COPY campus2company-lib/pom.xml ./campus2company-lib/pom.xml
@@ -16,7 +16,7 @@ RUN cd campus2company-lib && mvn install -DskipTests -B
 RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && ./mvnw dependency:go-offline -B
 
 # Copy source code
-COPY auth-service/src src
+COPY student-service/src src
 
 # Build the application
 RUN ./mvnw package -DskipTests -B

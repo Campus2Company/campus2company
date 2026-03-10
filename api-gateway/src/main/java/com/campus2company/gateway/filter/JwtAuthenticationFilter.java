@@ -24,7 +24,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     // Paths that do NOT require a JWT token
     private static final List<String> PUBLIC_PATHS = List.of(
             "/auth/login",
-            "/auth/register",
+            "/auth/register/student",
+            "/students/createStudent",
             "/actuator"
     );
 
