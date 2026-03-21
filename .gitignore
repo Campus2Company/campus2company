@@ -45,3 +45,6 @@ build/
 
 # Spring
 HELP.md
+
+.idea
+*/.idea

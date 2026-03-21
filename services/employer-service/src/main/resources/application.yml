@@ -6,9 +6,9 @@ spring:
     name: employer-service
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${EMPLOYER_SERVICE_DB_URL}
+    username: ${EMPLOYER_SERVICE_DB_USERNAME}
+    password: ${EMPLOYER_SERVICE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:

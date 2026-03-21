@@ -14,19 +14,15 @@ services:
       - .env
     ports:
       - "8080:8080"
-    depends_on:
-      - auth-service
 
-  # ── Auth Service + Database ────────────────────────────────────
   auth-service:
     build:
-      context: ../services/auth-service
+      context: ../services
+      dockerfile: auth-service/Dockerfile
     image: auth-service:latest
     container_name: auth-service
     env_file:
       - .env
-    environment:
-      - DB_URL=jdbc:postgresql://auth-db:5432/auth_db
     ports:
       - "8081:8080"
     depends_on:
@@ -38,61 +34,57 @@ services:
     container_name: auth-db
     environment:
       POSTGRES_DB: auth_db
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${AUTH_SERVICE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${AUTH_SERVICE_DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - auth_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d auth_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${AUTH_SERVICE_DB_USERNAME} -d auth_db"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # ── Student Service + Database ─────────────────────────────────
-#  student-service:
-#    build:
-#      context: ../services/student-service
-#    image: student-service:latest
-#    container_name: student-service
-#    env_file:
-#      - .env
-#    environment:
-#      - DB_URL=jdbc:postgresql://student-db:5432/student_db
-#    ports:
-#      - "8082:8080"
-#    depends_on:
-#      student-db:
-#        condition: service_healthy
-#
-#  student-db:
-#    image: postgres:16
-#    container_name: student-db
-#    environment:
-#      POSTGRES_DB: student_db
-#      POSTGRES_USER: ${DB_USERNAME}
-#      POSTGRES_PASSWORD: ${DB_PASSWORD}
-#    ports:
-#      - "5433:5432"
-#    volumes:
-#      - student_db_data:/var/lib/postgresql/data
-#    healthcheck:
-#      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d student_db"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
+  student-service:
+    build:
+      context: ../services
+      dockerfile: student-service/Dockerfile
+    image: student-service:latest
+    container_name: student-service
+    env_file:
+      - .env
+    ports:
+      - "8082:8080"
+    depends_on:
+      student-db:
+        condition: service_healthy
 
-  # ── Employer Service + Database ────────────────────────────────
+  student-db:
+    image: postgres:16
+    container_name: student-db
+    environment:
+      POSTGRES_DB: student_db
+      POSTGRES_USER: ${STUDENT_SERVICE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${STUDENT_SERVICE_DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - student_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${STUDENT_SERVICE_DB_USERNAME} -d student_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   employer-service:
     build:
-      context: ../services/employer-service
+      context: ../services
+      dockerfile: employer-service/Dockerfile
     image: employer-service:latest
     container_name: employer-service
     env_file:
       - .env
-    environment:
-      - DB_URL=jdbc:postgresql://employer-db:5432/employer_db
     ports:
       - "8083:8080"
     depends_on:
@@ -104,14 +96,14 @@ services:
     container_name: employer-db
     environment:
       POSTGRES_DB: employer_db
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${EMPLOYER_SERVICE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${EMPLOYER_SERVICE_DB_PASSWORD}
     ports:
       - "5434:5432"
     volumes:
       - employer_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d employer_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${EMPLOYER_SERVICE_DB_USERNAME} -d employer_db"]
       interval: 10s
       timeout: 5s
       retries: 5
