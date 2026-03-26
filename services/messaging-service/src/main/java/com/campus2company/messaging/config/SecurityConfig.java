@@ -1,4 +1,4 @@
-package com.campus2company.employer.config;
+package com.campus2company.messaging.config;
 
 import com.campus2company.common.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;

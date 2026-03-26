@@ -11,10 +11,6 @@ spring:
     password: ${STUDENT_SERVICE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
-  jwt:
-    secret: ${JWT_SECRET}
-    expiration: 3600000 # 1 hour in milliseconds
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -23,6 +19,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# JWT Configuration (validation only — same secret as auth-service)
+jwt:
+  secret: ${JWT_SECRET}
+  expiry-minutes: ${JWT_EXPIRY_MINUTES}
 
 management:
   endpoints:

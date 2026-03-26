@@ -3,12 +3,12 @@ server:
 
 spring:
   application:
-    name: employer-service
+    name: messaging-service
 
   datasource:
-    url: ${EMPLOYER_SERVICE_DB_URL}
-    username: ${EMPLOYER_SERVICE_DB_USERNAME}
-    password: ${EMPLOYER_SERVICE_DB_PASSWORD}
+    url: ${MESSAGING_SERVICE_DB_URL}
+    username: ${MESSAGING_SERVICE_DB_USERNAME}
+    password: ${MESSAGING_SERVICE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -53,5 +53,5 @@ cors:
 # Logging
 logging:
   level:
-    com.campus2company.employer: DEBUG
+    com.campus2company.messaging: DEBUG
     org.springframework.security: DEBUG

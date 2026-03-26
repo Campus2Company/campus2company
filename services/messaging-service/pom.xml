@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.campus2company</groupId>
-    <artifactId>employer-service</artifactId>
+    <artifactId>messaging-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>employer-service</name>
-    <description>Employer profile service for Campus2Company platform</description>
+    <name>messaging-service</name>
+    <description>Messaging service for Campus2Company platform</description>
 
     <properties>
         <java.version>21</java.version>
