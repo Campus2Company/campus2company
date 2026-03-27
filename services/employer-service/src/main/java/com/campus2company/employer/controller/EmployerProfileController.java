@@ -3,7 +3,7 @@ package com.campus2company.employer.controller;
 import com.campus2company.employer.dto.request.CreateEmployerProfileRequest;
 import com.campus2company.employer.dto.request.UpdateEmployerProfileRequest;
 import com.campus2company.employer.dto.response.EmployerProfileResponse;
-import com.campus2company.employer.security.UserPrincipal;
+import com.campus2company.common.security.UserPrincipal;
 import com.campus2company.employer.service.EmployerProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
