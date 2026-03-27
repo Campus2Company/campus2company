@@ -32,17 +32,28 @@ public class MessagingService {
             throw new ForbiddenException("Cannot send a message to yourself");
         }
 
-        // Find or create conversation
-        Conversation conversation = conversationRepository
-                .findByParticipants(senderId, request.getRecipientId())
-                .orElseGet(() -> {
-                    Conversation newConversation = Conversation.builder()
-                            .participantOneId(senderId)
-                            .participantTwoId(request.getRecipientId())
-                            .build();
-                    log.info("Created new conversation between {} and {}", senderId, request.getRecipientId());
-                    return conversationRepository.save(newConversation);
-                });
+        Conversation conversation;
+
+        // If conversationId provided, use existing conversation
+        if (request.getConversationId() != null) {
+            conversation = conversationRepository.findById(request.getConversationId())
+                    .orElseThrow(() -> ResourceNotFoundException.conversation(request.getConversationId()));
+            verifyParticipant(conversation, senderId);
+        } else {
+            // Find or create conversation for this project
+            conversation = conversationRepository
+                    .findByParticipantsAndProject(senderId, request.getRecipientId(), request.getProjectId())
+                    .orElseGet(() -> {
+                        Conversation newConversation = Conversation.builder()
+                                .participantOneId(senderId)
+                                .participantTwoId(request.getRecipientId())
+                                .projectId(request.getProjectId())
+                                .build();
+                        log.info("Created new conversation between {} and {} for project {}",
+                                senderId, request.getRecipientId(), request.getProjectId());
+                        return conversationRepository.save(newConversation);
+                    });
+        }
 
         // Create message
         Message message = Message.builder()

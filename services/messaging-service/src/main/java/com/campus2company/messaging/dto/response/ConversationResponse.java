@@ -14,6 +14,7 @@ public class ConversationResponse {
     private UUID id;
     private UUID participantOneId;
     private UUID participantTwoId;
+    private UUID projectId;
     private String lastMessageContent;
     private LocalDateTime lastMessageAt;
     private long unreadCount;
@@ -24,6 +25,7 @@ public class ConversationResponse {
                 .id(conversation.getId())
                 .participantOneId(conversation.getParticipantOneId())
                 .participantTwoId(conversation.getParticipantTwoId())
+                .projectId(conversation.getProjectId())
                 .lastMessageContent(conversation.getLastMessageContent())
                 .lastMessageAt(conversation.getLastMessageAt())
                 .unreadCount(unreadCount)

@@ -16,6 +16,6 @@ public interface ConversationRepository extends JpaRepository<Conversation, UUID
     @Query("SELECT c FROM Conversation c WHERE c.participantOneId = :userId OR c.participantTwoId = :userId ORDER BY c.lastMessageAt DESC NULLS LAST")
     List<Conversation> findAllByParticipant(@Param("userId") UUID userId);
 
-    @Query("SELECT c FROM Conversation c WHERE (c.participantOneId = :userA AND c.participantTwoId = :userB) OR (c.participantOneId = :userB AND c.participantTwoId = :userA)")
-    Optional<Conversation> findByParticipants(@Param("userA") UUID userA, @Param("userB") UUID userB);
+    @Query("SELECT c FROM Conversation c WHERE ((c.participantOneId = :userA AND c.participantTwoId = :userB) OR (c.participantOneId = :userB AND c.participantTwoId = :userA)) AND c.projectId = :projectId")
+    Optional<Conversation> findByParticipantsAndProject(@Param("userA") UUID userA, @Param("userB") UUID userB, @Param("projectId") UUID projectId);
 }

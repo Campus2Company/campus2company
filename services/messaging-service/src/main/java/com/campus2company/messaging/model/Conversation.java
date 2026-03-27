@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "conversations", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"participant_one_id", "participant_two_id"})
+        @UniqueConstraint(columnNames = {"participant_one_id", "participant_two_id", "project_id"})
 })
 @Getter
 @Setter
@@ -28,6 +28,9 @@ public class Conversation {
 
     @Column(name = "participant_two_id", nullable = false)
     private UUID participantTwoId;
+
+    @Column(name = "project_id", nullable = false)
+    private UUID projectId;
 
     @Column(columnDefinition = "TEXT")
     private String lastMessageContent;
