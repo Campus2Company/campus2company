@@ -45,6 +45,12 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- Kafka -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
         <!-- Shared Library (JWT, Role, AccountStatus, UserPrincipal, etc.) -->
         <dependency>
             <groupId>com.campus2company</groupId>

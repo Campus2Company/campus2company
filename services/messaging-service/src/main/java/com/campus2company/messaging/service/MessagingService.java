@@ -1,5 +1,7 @@
 package com.campus2company.messaging.service;
 
+import com.campus2company.common.event.KafkaTopics;
+import com.campus2company.common.event.MessageSentEvent;
 import com.campus2company.messaging.dto.request.SendMessageRequest;
 import com.campus2company.messaging.dto.response.ConversationResponse;
 import com.campus2company.messaging.dto.response.MessageResponse;
@@ -11,6 +13,7 @@ import com.campus2company.messaging.repository.ConversationRepository;
 import com.campus2company.messaging.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +28,7 @@ public class MessagingService {
 
     private final ConversationRepository conversationRepository;
     private final MessageRepository messageRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Transactional
     public MessageResponse sendMessage(UUID senderId, SendMessageRequest request) {
@@ -71,6 +75,32 @@ public class MessagingService {
         conversationRepository.save(conversation);
 
         log.info("Message sent from {} in conversation {}", senderId, conversation.getId());
+
+        // Publish Kafka event for notification service
+        UUID recipientId = conversation.getParticipantOneId().equals(senderId)
+                ? conversation.getParticipantTwoId()
+                : conversation.getParticipantOneId();
+
+        String preview = request.getContent();
+        if (preview != null && preview.length() > 100) {
+            preview = preview.substring(0, 100) + "...";
+        }
+
+        MessageSentEvent event = MessageSentEvent.builder()
+                .eventId(UUID.randomUUID())
+                .eventType("message.sent")
+                .timestamp(LocalDateTime.now())
+                .source("messaging-service")
+                .senderId(senderId)
+                .recipientId(recipientId)
+                .conversationId(conversation.getId())
+                .projectId(conversation.getProjectId())
+                .messagePreview(preview)
+                .build();
+
+        kafkaTemplate.send(KafkaTopics.MESSAGE_SENT, event);
+        log.info("Published message.sent event for conversation {}", conversation.getId());
+
         return MessageResponse.from(saved);
     }
 
