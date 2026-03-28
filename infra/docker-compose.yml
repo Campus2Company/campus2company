@@ -28,6 +28,8 @@ services:
     depends_on:
       auth-db:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
 
   auth-db:
     image: postgres:16
@@ -107,6 +109,30 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # ── Kafka (Event Bus) ──────────────────────────────────────────
+  kafka:
+    image: apache/kafka:3.9.0
+    container_name: kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_DIRS: /tmp/kraft-logs
+      CLUSTER_ID: campus2company-kafka-cluster-01
+    ports:
+      - "9092:9092"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server kafka:9092 > /dev/null 2>&1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   # ── Lecturer Service + Database ────────────────────────────────
 #  lecturer-service:
@@ -282,6 +308,8 @@ services:
     depends_on:
       messaging-db:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
 
   messaging-db:
     image: postgres:16
@@ -301,36 +329,38 @@ services:
       retries: 5
 
   # ── Notification Service + Database ───────────────────────────
-#  notification-service:
-#    build:
-#      context: ../services
-#      dockerfile: notification-service/Dockerfile
-#    image: notification-service:latest
-#    container_name: notification-service
-#    env_file:
-#      - .env
-#    ports:
-#      - "8090:8080"
-#    depends_on:
-#      notification-db:
-#        condition: service_healthy
-#
-#  notification-db:
-#    image: postgres:16
-#    container_name: notification-db
-#    environment:
-#      POSTGRES_DB: notification_db
-#      POSTGRES_USER: ${NOTIFICATION_SERVICE_DB_USERNAME}
-#      POSTGRES_PASSWORD: ${NOTIFICATION_SERVICE_DB_PASSWORD}
-#    ports:
-#      - "5441:5432"
-#    volumes:
-#      - notification_db_data:/var/lib/postgresql/data
-#    healthcheck:
-#      test: ["CMD-SHELL", "pg_isready -U ${NOTIFICATION_SERVICE_DB_USERNAME} -d notification_db"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
+  notification-service:
+    build:
+      context: ../services
+      dockerfile: notification-service/Dockerfile
+    image: notification-service:latest
+    container_name: notification-service
+    env_file:
+      - .env
+    ports:
+      - "8090:8080"
+    depends_on:
+      notification-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  notification-db:
+    image: postgres:16
+    container_name: notification-db
+    environment:
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: ${NOTIFICATION_SERVICE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${NOTIFICATION_SERVICE_DB_PASSWORD}
+    ports:
+      - "5441:5432"
+    volumes:
+      - notification_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${NOTIFICATION_SERVICE_DB_USERNAME} -d notification_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   auth_db_data:

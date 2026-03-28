@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.campus2company</groupId>
-    <artifactId>messaging-service</artifactId>
+    <artifactId>notification-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>messaging-service</name>
-    <description>Messaging service for Campus2Company platform</description>
+    <name>notification-service</name>
+    <description>Notification service for Campus2Company platform</description>
 
     <properties>
         <java.version>21</java.version>
@@ -51,7 +51,7 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
 
-        <!-- Shared Library (JWT, Role, AccountStatus, UserPrincipal, etc.) -->
+        <!-- Shared Library -->
         <dependency>
             <groupId>com.campus2company</groupId>
             <artifactId>campus2company-lib</artifactId>
@@ -88,6 +88,11 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
