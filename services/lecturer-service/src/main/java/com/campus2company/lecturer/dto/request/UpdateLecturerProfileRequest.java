@@ -1,5 +1,6 @@
 package com.campus2company.lecturer.dto.request;
 
+import com.campus2company.lecturer.model.SupervisorStatus;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class UpdateLecturerProfileRequest {
+
+    private SupervisorStatus supervisorStatus;
 
     @Size(max = 100, message = "First name must not exceed 100 characters")
     private String firstName;

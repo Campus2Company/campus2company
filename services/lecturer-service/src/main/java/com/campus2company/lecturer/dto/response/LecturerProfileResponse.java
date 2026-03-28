@@ -1,6 +1,7 @@
 package com.campus2company.lecturer.dto.response;
 
 import com.campus2company.lecturer.model.LecturerProfile;
+import com.campus2company.lecturer.model.SupervisorStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,6 +21,7 @@ public class LecturerProfileResponse {
     private String bio;
     private String specializations;
     private Long universityId;
+    private SupervisorStatus supervisorStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -34,6 +36,7 @@ public class LecturerProfileResponse {
                 .bio(profile.getBio())
                 .specializations(profile.getSpecializations())
                 .universityId(profile.getUniversityId())
+                .supervisorStatus(profile.getSupervisorStatus())
                 .createdAt(profile.getCreatedAt())
                 .updatedAt(profile.getUpdatedAt())
                 .build();

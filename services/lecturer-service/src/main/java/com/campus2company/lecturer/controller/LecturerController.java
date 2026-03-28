@@ -63,8 +63,9 @@ public class LecturerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LecturerProfileResponse>> getAllProfiles() {
-        return ResponseEntity.ok(service.getAllProfiles());
+    public ResponseEntity<List<LecturerProfileResponse>> getAllProfiles(
+            @RequestParam(required = false) Long universityId) {
+        return ResponseEntity.ok(service.getAllProfiles(universityId));
     }
 
     // Supervision

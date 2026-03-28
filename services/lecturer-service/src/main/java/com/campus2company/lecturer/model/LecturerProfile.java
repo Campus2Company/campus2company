@@ -43,6 +43,15 @@ public class LecturerProfile {
     @Column(nullable = false)
     private Long universityId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private SupervisorStatus supervisorStatus = SupervisorStatus.AVAILABLE;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isDeleted = false;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

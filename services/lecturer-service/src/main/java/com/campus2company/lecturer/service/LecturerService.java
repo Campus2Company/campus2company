@@ -53,21 +53,24 @@ public class LecturerService {
 
     @Transactional(readOnly = true)
     public LecturerProfileResponse getProfileByUserId(UUID userId) {
-        LecturerProfile profile = profileRepository.findByUserId(userId)
+        LecturerProfile profile = profileRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> ResourceNotFoundException.lecturerProfile(userId));
         return LecturerProfileResponse.from(profile);
     }
 
     @Transactional(readOnly = true)
-    public List<LecturerProfileResponse> getAllProfiles() {
-        return profileRepository.findAll().stream()
+    public List<LecturerProfileResponse> getAllProfiles(Long universityId) {
+        List<LecturerProfile> profiles = (universityId != null)
+                ? profileRepository.findByUniversityIdAndIsDeletedFalse(universityId)
+                : profileRepository.findByIsDeletedFalse();
+        return profiles.stream()
                 .map(LecturerProfileResponse::from)
                 .toList();
     }
 
     @Transactional
     public LecturerProfileResponse updateProfile(UUID userId, UpdateLecturerProfileRequest request) {
-        LecturerProfile profile = profileRepository.findByUserId(userId)
+        LecturerProfile profile = profileRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> ResourceNotFoundException.lecturerProfile(userId));
 
         if (request.getFirstName() != null) {
@@ -88,6 +91,9 @@ public class LecturerService {
         if (request.getSpecializations() != null) {
             profile.setSpecializations(request.getSpecializations());
         }
+        if (request.getSupervisorStatus() != null) {
+            profile.setSupervisorStatus(request.getSupervisorStatus());
+        }
 
         LecturerProfile saved = profileRepository.saveAndFlush(profile);
         log.info("Updated lecturer profile for userId: {}", userId);
@@ -96,18 +102,19 @@ public class LecturerService {
 
     @Transactional
     public void deleteProfile(UUID userId) {
-        LecturerProfile profile = profileRepository.findByUserId(userId)
+        LecturerProfile profile = profileRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> ResourceNotFoundException.lecturerProfile(userId));
-        profileRepository.delete(profile);
-        log.info("Deleted lecturer profile for userId: {}", userId);
+        profile.setDeleted(true);
+        profileRepository.save(profile);
+        log.info("Soft-deleted lecturer profile for userId: {}", userId);
     }
 
     // Supervision
 
     @Transactional
     public SupervisionResponse assignStudent(UUID lecturerId, UUID studentId) {
-        // Ensure the lecturer has a profile
-        if (!profileRepository.existsByUserId(lecturerId)) {
+        // Ensure the lecturer has an active profile
+        if (profileRepository.findByUserIdAndIsDeletedFalse(lecturerId).isEmpty()) {
             throw ResourceNotFoundException.lecturerProfile(lecturerId);
         }
 
