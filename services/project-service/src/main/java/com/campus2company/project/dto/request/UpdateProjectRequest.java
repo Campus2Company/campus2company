@@ -16,14 +16,11 @@ public class UpdateProjectRequest {
     @Size(max = 2000)
     private String description;
 
-
     private Set<ProjectCategory> categories;
 
     private ProjectStatus status;
 
-
     private LocalDateTime applicationDeadline;
-
 
     private LocalDateTime projectDeadline;
 }
