@@ -42,7 +42,7 @@ public class StudentServiceTests {
                 .course("Computer Science")
                 .faculty("Engineering")
                 .studyLevel(StudyLevel.UNDERGRADUATE)
-                .universityId(1L)
+                .universityId(UUID.randomUUID())
                 .fypStatus(FypStatus.AVAILABLE)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

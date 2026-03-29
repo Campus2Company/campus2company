@@ -1,5 +1,6 @@
 package com.campus2company.auth.controller;
 
+import com.campus2company.auth.dto.request.EmployerRegisterRequest;
 import com.campus2company.auth.dto.request.LoginRequest;
 import com.campus2company.auth.dto.request.RegisterRequest;
 import com.campus2company.auth.dto.request.StudentRegisterRequest;
@@ -42,19 +43,15 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    //I think we will need to remove this or make this endpoint just for creating new admins
-    //because it makes no sense right as you need to have a bearer token to register a new student/business
-    //but how can a user get a token if tokens are given on log in and you need to be registered to login?
-    @PostMapping("/register")
-    @Operation(summary = "Register a new user",
-            description = "Register a new STUDENT, EMPLOYER, LECTURER, or UNIVERSITY_ADMIN account. PLATFORM_ADMIN registration is blocked.")
+    @PostMapping("/register/employer")
+    @Operation(summary = "Register a new Employer",
+            description = "Register a new EMPLOYER account with company details. Account will be PENDING_APPROVAL until an admin approves it.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "User registered successfully"),
+            @ApiResponse(responseCode = "201", description = "Employer registered successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
-            @ApiResponse(responseCode = "403", description = "Admin registration not allowed"),
             @ApiResponse(responseCode = "409", description = "User already exists")
     })
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<UserResponse> registerEmployer(@Valid @RequestBody EmployerRegisterRequest request) {
         UserResponse response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

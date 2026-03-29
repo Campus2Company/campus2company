@@ -1,6 +1,5 @@
 package com.campus2company.common.dto.request;
 
-import com.campus2company.common.enums.StudyLevel;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,28 +14,20 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateStudentRequest {
+public class CreateEmployerRequest {
 
     @NotNull
     private UUID authUserId;
 
     @NotBlank
-    private String firstName;
+    private String companyName;
 
-    @NotBlank
-    private String lastName;
+    @Size(max = 100)
+    private String industry;
 
-    @NotBlank
-    private String course;
+    @Size(max = 2000)
+    private String description;
 
-    @NotNull
-    private StudyLevel studyLevel;
-
-    @NotNull
-    private UUID universityId;
-
-    private String faculty;
-
-    @Size(max = 1000)
-    private String bio;
+    @Size(max = 500)
+    private String websiteUrl;
 }

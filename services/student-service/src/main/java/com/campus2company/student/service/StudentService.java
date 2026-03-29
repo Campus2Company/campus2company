@@ -7,9 +7,10 @@ import com.campus2company.student.model.Student;
 import com.campus2company.student.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -19,11 +20,14 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
-    public List<StudentResponse> getAllStudents() {
-        return studentRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
+    public Page<StudentResponse> getAllStudents(UUID universityId, Pageable pageable) {
+        if (universityId != null) {
+            return studentRepository.findByUniversityId(universityId, pageable)
+                    .map(this::mapToResponse);
+        }
+
+        return studentRepository.findAll(pageable)
+                .map(this::mapToResponse);
     }
 
     public Student getStudentById(UUID id) {

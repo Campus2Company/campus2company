@@ -1,4 +1,4 @@
-package com.campus2company.employer.config;
+package com.campus2company.lecturer.config;
 
 import com.campus2company.common.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +27,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Internal service-to-service endpoint (called by auth-service during registration)
-                        .requestMatchers("/employers/createEmployer").permitAll()
                         // Swagger/OpenAPI endpoints
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
+                                "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml"
                         ).permitAll()

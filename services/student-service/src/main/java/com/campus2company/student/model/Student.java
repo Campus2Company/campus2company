@@ -46,7 +46,7 @@ public class Student {
 
     //@Column(name = "university_id", nullable = false)
     @Column(nullable = false)
-    private Long universityId;
+    private UUID universityId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
