@@ -31,7 +31,7 @@ public class StudentResponse {
 
         private StudyLevel studyLevel;
 
-        private Long universityId;
+        private UUID universityId;
 
         private FypStatus fypStatus;
 
