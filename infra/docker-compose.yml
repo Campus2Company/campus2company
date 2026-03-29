@@ -135,36 +135,36 @@ services:
       start_period: 30s
 
   # ── Lecturer Service + Database ────────────────────────────────
-#  lecturer-service:
-#    build:
-#      context: ../services
-#      dockerfile: lecturer-service/Dockerfile
-#    image: lecturer-service:latest
-#    container_name: lecturer-service
-#    env_file:
-#      - .env
-#    ports:
-#      - "8084:8080"
-#    depends_on:
-#      lecturer-db:
-#        condition: service_healthy
-#
-#  lecturer-db:
-#    image: postgres:16
-#    container_name: lecturer-db
-#    environment:
-#      POSTGRES_DB: lecturer_db
-#      POSTGRES_USER: ${LECTURER_SERVICE_DB_USERNAME}
-#      POSTGRES_PASSWORD: ${LECTURER_SERVICE_DB_PASSWORD}
-#    ports:
-#      - "5435:5432"
-#    volumes:
-#      - lecturer_db_data:/var/lib/postgresql/data
-#    healthcheck:
-#      test: ["CMD-SHELL", "pg_isready -U ${LECTURER_SERVICE_DB_USERNAME} -d lecturer_db"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
+  lecturer-service:
+    build:
+      context: ../services
+      dockerfile: lecturer-service/Dockerfile
+    image: lecturer-service:latest
+    container_name: lecturer-service
+    env_file:
+      - .env
+    ports:
+      - "8084:8080"
+    depends_on:
+      lecturer-db:
+        condition: service_healthy
+
+  lecturer-db:
+    image: postgres:16
+    container_name: lecturer-db
+    environment:
+      POSTGRES_DB: lecturer_db
+      POSTGRES_USER: ${LECTURER_SERVICE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${LECTURER_SERVICE_DB_PASSWORD}
+    ports:
+      - "5435:5432"
+    volumes:
+      - lecturer_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${LECTURER_SERVICE_DB_USERNAME} -d lecturer_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # ── University Admin Service + Database ───────────────────────
 #  university-admin-service:
