@@ -6,9 +6,9 @@ spring:
     name: employer-service
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${EMPLOYER_SERVICE_DB_URL}
+    username: ${EMPLOYER_SERVICE_DB_USERNAME}
+    password: ${EMPLOYER_SERVICE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -23,6 +23,7 @@ spring:
 # JWT Configuration (validation only — same secret as auth-service)
 jwt:
   secret: ${JWT_SECRET}
+  expiry-minutes: ${JWT_EXPIRY_MINUTES}
 
 # Actuator
 management:

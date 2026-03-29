@@ -45,20 +45,19 @@ export default function NavBar() {
             </Link>
           </li>
           <li>
-            {/* placeholder links - prevent navigation until pages exist */}
-            <a href="#" className="nav-link" onClick={e => e.preventDefault()}>
+            <Link href="/listings" className={`nav-link ${isActive('/listings') ? 'active' : ''}`}>
               Listings
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#" className="nav-link" onClick={e => e.preventDefault()}>
+            <Link href="/chat" className={`nav-link ${isActive('/chat') ? 'active' : ''}`}>
               Chat
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#" className="nav-link" onClick={e => e.preventDefault()}>
+            <Link href="/dashboard" className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}>
               Dashboard
-            </a>
+            </Link>
           </li>
           {/* remove when real pages are implemented */}
         </ul>

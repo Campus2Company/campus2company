@@ -1,6 +1,6 @@
 package com.campus2company.employer.config;
 
-import com.campus2company.employer.security.JwtAuthFilter;
+import com.campus2company.common.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
