@@ -20,7 +20,7 @@ public class LecturerProfileResponse {
     private String faculty;
     private String bio;
     private String specializations;
-    private Long universityId;
+    private UUID universityId;
     private SupervisorStatus supervisorStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

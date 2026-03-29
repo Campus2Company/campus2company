@@ -1,5 +1,6 @@
 package com.campus2company.employer.service;
 
+import com.campus2company.common.dto.request.CreateEmployerRequest;
 import com.campus2company.employer.dto.request.CreateEmployerProfileRequest;
 import com.campus2company.employer.dto.request.UpdateEmployerProfileRequest;
 import com.campus2company.employer.dto.response.EmployerProfileResponse;
@@ -21,6 +22,27 @@ import java.util.UUID;
 public class EmployerProfileService {
 
     private final EmployerProfileRepository repository;
+
+    @Transactional
+    public EmployerProfileResponse createEmployerFromRegistration(CreateEmployerRequest request) {
+        UUID userId = request.getAuthUserId();
+        if (repository.existsByUserId(userId)) {
+            throw new ProfileAlreadyExistsException();
+        }
+
+        EmployerProfile profile = EmployerProfile.builder()
+                .userId(userId)
+                .companyName(request.getCompanyName())
+                .industry(request.getIndustry())
+                .description(request.getDescription())
+                .websiteUrl(request.getWebsiteUrl())
+                .verified(false)
+                .build();
+
+        EmployerProfile saved = repository.save(profile);
+        log.info("Created employer profile from registration for userId: {}", userId);
+        return EmployerProfileResponse.from(saved);
+    }
 
     @Transactional
     public EmployerProfileResponse createProfile(UUID userId, CreateEmployerProfileRequest request) {

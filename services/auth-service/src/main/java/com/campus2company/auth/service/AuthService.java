@@ -1,5 +1,6 @@
 package com.campus2company.auth.service;
 
+import com.campus2company.auth.dto.request.EmployerRegisterRequest;
 import com.campus2company.auth.dto.request.LoginRequest;
 import com.campus2company.auth.dto.request.RegisterRequest;
 import com.campus2company.auth.dto.request.StudentRegisterRequest;
@@ -9,6 +10,7 @@ import com.campus2company.auth.exception.*;
 import com.campus2company.auth.model.AccountStatus;
 import com.campus2company.auth.model.Role;
 import com.campus2company.auth.model.UserAccount;
+import com.campus2company.auth.client.EmployerServiceClient;
 import com.campus2company.auth.client.StudentServiceClient;
 import com.campus2company.auth.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.campus2company.common.dto.request.CreateEmployerRequest;
 import com.campus2company.common.dto.request.CreateStudentRequest;
 
 import java.util.UUID;
@@ -29,6 +32,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final StudentServiceClient studentServiceClient;
+    private final EmployerServiceClient employerServiceClient;
 
     @Transactional
     public UserResponse register(RegisterRequest request) {
@@ -62,7 +66,7 @@ public class AuthService {
         try {
             switch (request.getRole()) {
                 case STUDENT -> handleStudentRegistration(savedUser.getId(), request, token);
-                case EMPLOYER -> log.info("trying to create a company");//for comapny registration, we can add a similar method like handleCompanyRegistration and call it here;
+                case EMPLOYER -> handleEmployerRegistration(savedUser.getId(), request, token);
             }
         } catch (Exception e){
             log.error("Error during post-registration processing for user {}: {}", savedUser.getEmail(), e.getMessage());
@@ -117,6 +121,24 @@ public class AuthService {
         }
     }
 
+
+    private void handleEmployerRegistration(UUID authUserId, RegisterRequest request, String token) {
+        try {
+            EmployerRegisterRequest registerRequest = (EmployerRegisterRequest) request;
+            CreateEmployerRequest employerRequest = CreateEmployerRequest.builder()
+                    .authUserId(authUserId)
+                    .companyName(registerRequest.getCompanyName())
+                    .industry(registerRequest.getIndustry())
+                    .description(registerRequest.getDescription())
+                    .websiteUrl(registerRequest.getWebsiteUrl())
+                    .build();
+
+            employerServiceClient.createEmployer(employerRequest, "Bearer " + token);
+        } catch (Exception e) {
+            log.error("Failed to create employer profile for user ID {}: {}", authUserId, e.getMessage());
+            throw new RuntimeException("Failed to create employer profile. Please try again.");
+        }
+    }
 
     private AccountStatus determineInitialStatus(Role role) {
         return switch (role) {

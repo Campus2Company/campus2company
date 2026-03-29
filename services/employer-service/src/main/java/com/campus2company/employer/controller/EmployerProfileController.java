@@ -1,5 +1,6 @@
 package com.campus2company.employer.controller;
 
+import com.campus2company.common.dto.request.CreateEmployerRequest;
 import com.campus2company.employer.dto.request.CreateEmployerProfileRequest;
 import com.campus2company.employer.dto.request.UpdateEmployerProfileRequest;
 import com.campus2company.employer.dto.response.EmployerProfileResponse;
@@ -29,6 +30,19 @@ import java.util.UUID;
 public class EmployerProfileController {
 
     private final EmployerProfileService service;
+
+    @PostMapping("/createEmployer")
+    @Operation(summary = "Internal: Create employer profile during registration",
+            description = "Called by auth-service during employer registration. Not for direct use.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Profile created successfully"),
+            @ApiResponse(responseCode = "409", description = "Profile already exists")
+    })
+    public ResponseEntity<EmployerProfileResponse> createEmployer(
+            @Valid @RequestBody CreateEmployerRequest request) {
+        EmployerProfileResponse response = service.createEmployerFromRegistration(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
     @PostMapping("/profile")
     @PreAuthorize("hasRole('EMPLOYER')")

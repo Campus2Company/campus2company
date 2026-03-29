@@ -59,7 +59,7 @@ public class LecturerService {
     }
 
     @Transactional(readOnly = true)
-    public List<LecturerProfileResponse> getAllProfiles(Long universityId) {
+    public List<LecturerProfileResponse> getAllProfiles(UUID universityId) {
         List<LecturerProfile> profiles = (universityId != null)
                 ? profileRepository.findByUniversityIdAndIsDeletedFalse(universityId)
                 : profileRepository.findByIsDeletedFalse();
@@ -101,9 +101,30 @@ public class LecturerService {
     }
 
     @Transactional
-    public void deleteProfile(UUID userId) {
+    public void deleteProfile(UUID userId, UUID reassignLecturerId) {
         LecturerProfile profile = profileRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> ResourceNotFoundException.lecturerProfile(userId));
+
+        // Reassign active supervisions to another lecturer if provided
+        List<Supervision> activeSupervisions = supervisionRepository.findByLecturerIdAndActiveTrue(userId);
+        if (!activeSupervisions.isEmpty()) {
+            if (reassignLecturerId == null) {
+                throw new IllegalArgumentException(
+                        "Cannot delete lecturer with " + activeSupervisions.size()
+                                + " active supervisions. Provide reassignLecturerId to reassign them.");
+            }
+
+            // Verify the reassign target exists and is active
+            profileRepository.findByUserIdAndIsDeletedFalse(reassignLecturerId)
+                    .orElseThrow(() -> ResourceNotFoundException.lecturerProfile(reassignLecturerId));
+
+            for (Supervision supervision : activeSupervisions) {
+                supervision.setLecturerId(reassignLecturerId);
+            }
+            supervisionRepository.saveAll(activeSupervisions);
+            log.info("Reassigned {} supervisions from {} to {}", activeSupervisions.size(), userId, reassignLecturerId);
+        }
+
         profile.setDeleted(true);
         profileRepository.save(profile);
         log.info("Soft-deleted lecturer profile for userId: {}", userId);

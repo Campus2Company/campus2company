@@ -18,7 +18,7 @@ public interface LecturerProfileRepository extends JpaRepository<LecturerProfile
 
     List<LecturerProfile> findByIsDeletedFalse();
 
-    List<LecturerProfile> findByUniversityIdAndIsDeletedFalse(Long universityId);
+    List<LecturerProfile> findByUniversityIdAndIsDeletedFalse(UUID universityId);
 
-    List<LecturerProfile> findByUniversityIdAndSupervisorStatusAndIsDeletedFalse(Long universityId, SupervisorStatus supervisorStatus);
+    List<LecturerProfile> findByUniversityIdAndSupervisorStatusAndIsDeletedFalse(UUID universityId, SupervisorStatus supervisorStatus);
 }

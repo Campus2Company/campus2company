@@ -41,7 +41,7 @@ public class LecturerProfile {
     private String specializations;
 
     @Column(nullable = false)
-    private Long universityId;
+    private UUID universityId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

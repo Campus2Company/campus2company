@@ -52,8 +52,9 @@ public class LecturerController {
     @DeleteMapping("/profile")
     @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<Void> deleteProfile(
-            @AuthenticationPrincipal UserPrincipal principal) {
-        service.deleteProfile(principal.getId());
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam(required = false) UUID reassignLecturerId) {
+        service.deleteProfile(principal.getId(), reassignLecturerId);
         return ResponseEntity.noContent().build();
     }
 
@@ -64,7 +65,7 @@ public class LecturerController {
 
     @GetMapping
     public ResponseEntity<List<LecturerProfileResponse>> getAllProfiles(
-            @RequestParam(required = false) Long universityId) {
+            @RequestParam(required = false) UUID universityId) {
         return ResponseEntity.ok(service.getAllProfiles(universityId));
     }
 
@@ -78,7 +79,7 @@ public class LecturerController {
     }
 
     @PostMapping("/students/{studentId}")
-    @PreAuthorize("hasRole('LECTURER')")
+    @PreAuthorize("hasRole('UNIVERSITY_ADMIN')")
     public ResponseEntity<SupervisionResponse> assignStudent(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable UUID studentId) {

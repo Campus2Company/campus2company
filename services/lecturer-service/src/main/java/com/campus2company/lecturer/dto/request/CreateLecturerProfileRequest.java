@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -34,5 +36,5 @@ public class CreateLecturerProfileRequest {
     private String specializations;
 
     @NotNull(message = "University ID is required")
-    private Long universityId;
+    private UUID universityId;
 }

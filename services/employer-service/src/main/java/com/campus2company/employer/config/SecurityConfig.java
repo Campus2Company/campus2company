@@ -27,6 +27,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Internal service-to-service endpoint (called by auth-service during registration)
+                        .requestMatchers("/employers/createEmployer").permitAll()
                         // Swagger/OpenAPI endpoints
                         .requestMatchers(
                                 "/swagger-ui.html",
