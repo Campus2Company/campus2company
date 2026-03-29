@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.UUID;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class StudentRegisterRequest extends RegisterRequest{
@@ -30,5 +32,5 @@ public class StudentRegisterRequest extends RegisterRequest{
     private StudyLevel studyLevel;
 
     @NotNull(message = "University ID is required")
-    private Long universityId;
+    private UUID universityId;
 }

@@ -231,36 +231,36 @@ services:
 #      retries: 5
 
   # ── Project Service + Database ─────────────────────────────────
-#  project-service:
-#    build:
-#      context: ../services
-#      dockerfile: project-service/Dockerfile
-#    image: project-service:latest
-#    container_name: project-service
-#    env_file:
-#      - .env
-#    ports:
-#      - "8087:8080"
-#    depends_on:
-#      project-db:
-#        condition: service_healthy
-#
-#  project-db:
-#    image: postgres:16
-#    container_name: project-db
-#    environment:
-#      POSTGRES_DB: project_db
-#      POSTGRES_USER: ${PROJECT_SERVICE_DB_USERNAME}
-#      POSTGRES_PASSWORD: ${PROJECT_SERVICE_DB_PASSWORD}
-#    ports:
-#      - "5438:5432"
-#    volumes:
-#      - project_db_data:/var/lib/postgresql/data
-#    healthcheck:
-#      test: ["CMD-SHELL", "pg_isready -U ${PROJECT_SERVICE_DB_USERNAME} -d project_db"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
+  project-service:
+    build:
+      context: ../services
+      dockerfile: project-service/Dockerfile
+    image: project-service:latest
+    container_name: project-service
+    env_file:
+      - .env
+    ports:
+      - "8087:8080"
+    depends_on:
+      project-db:
+        condition: service_healthy
+
+  project-db:
+    image: postgres:16
+    container_name: project-db
+    environment:
+      POSTGRES_DB: project_db
+      POSTGRES_USER: ${PROJECT_SERVICE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${PROJECT_SERVICE_DB_PASSWORD}
+    ports:
+      - "5438:5432"
+    volumes:
+      - project_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PROJECT_SERVICE_DB_USERNAME} -d project_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # ── Application Service + Database ────────────────────────────
 #  application-service:

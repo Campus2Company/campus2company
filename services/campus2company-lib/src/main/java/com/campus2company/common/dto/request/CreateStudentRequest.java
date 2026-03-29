@@ -33,7 +33,7 @@ public class CreateStudentRequest {
     private StudyLevel studyLevel;
 
     @NotNull
-    private Long universityId;
+    private UUID universityId;
 
     private String faculty;
 
