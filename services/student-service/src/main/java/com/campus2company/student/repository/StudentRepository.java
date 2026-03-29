@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, UUID> {
-    Page<Student> findByUniversityId(Long universityId, Pageable pageable);
+    Page<Student> findByUniversityId(UUID universityId, Pageable pageable);
     Optional<Student> findByUserId(UUID authUserId);
     Page<Student> findByCourse(String course, Pageable pageable);
 }

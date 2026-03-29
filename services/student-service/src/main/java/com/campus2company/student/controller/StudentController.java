@@ -51,7 +51,7 @@ public class StudentController {
 
     @GetMapping("/all")
     public ResponseEntity<Page<StudentResponse>> getAllStudents(
-            @RequestParam(required = false) Long universityId,
+            @RequestParam(required = false) UUID universityId,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC ) Pageable pageable
     ) {
         return ResponseEntity.ok(studentService.getAllStudents(universityId, pageable));

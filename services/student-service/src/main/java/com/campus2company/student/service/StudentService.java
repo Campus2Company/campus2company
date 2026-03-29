@@ -20,7 +20,7 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
-    public Page<StudentResponse> getAllStudents(Long universityId, Pageable pageable) {
+    public Page<StudentResponse> getAllStudents(UUID universityId, Pageable pageable) {
         if (universityId != null) {
             return studentRepository.findByUniversityId(universityId, pageable)
                     .map(this::mapToResponse);
