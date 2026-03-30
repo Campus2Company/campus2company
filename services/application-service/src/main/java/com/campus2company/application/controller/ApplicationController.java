@@ -13,9 +13,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -56,9 +56,7 @@ public class ApplicationController {
     @ApiResponse(responseCode = "200", description = "List of applications")
     public ResponseEntity<Page<ApplicationResponse>> getMyApplications(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("appliedAt").descending());
+            @PageableDefault(size = 20, sort = "appliedAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(service.getStudentApplications(principal.getId(), pageable));
     }
 
@@ -73,9 +71,7 @@ public class ApplicationController {
     public ResponseEntity<Page<ApplicationResponse>> getApplicationsForProject(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable UUID projectId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("appliedAt").descending());
+            @PageableDefault(size = 20, sort = "appliedAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(service.getApplicationsForProject(principal.getId(), projectId, pageable));
     }
 
@@ -86,9 +82,7 @@ public class ApplicationController {
     @ApiResponse(responseCode = "200", description = "List of applications")
     public ResponseEntity<Page<ApplicationResponse>> getMyProjectApplications(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("appliedAt").descending());
+            @PageableDefault(size = 20, sort = "appliedAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(service.getEmployerApplications(principal.getId(), pageable));
     }
 
