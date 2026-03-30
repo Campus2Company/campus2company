@@ -6,4 +6,5 @@ public final class KafkaTopics {
 
     public static final String MESSAGE_SENT = "message.sent";
     public static final String ACCOUNT_STATUS_CHANGED = "account.status.changed";
+    public static final String APPLICATION_STATUS_CHANGED = "application.status.changed";
 }

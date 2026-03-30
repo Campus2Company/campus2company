@@ -1,6 +1,7 @@
 package com.campus2company.notification.config;
 
 import com.campus2company.common.event.AccountStatusChangedEvent;
+import com.campus2company.common.event.ApplicationStatusChangedEvent;
 import com.campus2company.common.event.MessageSentEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -61,6 +62,21 @@ public class KafkaConfig {
         ConcurrentKafkaListenerContainerFactory<String, AccountStatusChangedEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(accountStatusConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, ApplicationStatusChangedEvent> applicationStatusConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(baseConsumerConfig(),
+                new StringDeserializer(),
+                new JsonDeserializer<>(ApplicationStatusChangedEvent.class, false));
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, ApplicationStatusChangedEvent> applicationStatusListenerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, ApplicationStatusChangedEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(applicationStatusConsumerFactory());
         return factory;
     }
 }

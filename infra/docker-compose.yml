@@ -263,36 +263,38 @@ services:
       retries: 5
 
   # ── Application Service + Database ────────────────────────────
-#  application-service:
-#    build:
-#      context: ../services
-#      dockerfile: application-service/Dockerfile
-#    image: application-service:latest
-#    container_name: application-service
-#    env_file:
-#      - .env
-#    ports:
-#      - "8088:8080"
-#    depends_on:
-#      application-db:
-#        condition: service_healthy
-#
-#  application-db:
-#    image: postgres:16
-#    container_name: application-db
-#    environment:
-#      POSTGRES_DB: application_db
-#      POSTGRES_USER: ${APPLICATION_SERVICE_DB_USERNAME}
-#      POSTGRES_PASSWORD: ${APPLICATION_SERVICE_DB_PASSWORD}
-#    ports:
-#      - "5439:5432"
-#    volumes:
-#      - application_db_data:/var/lib/postgresql/data
-#    healthcheck:
-#      test: ["CMD-SHELL", "pg_isready -U ${APPLICATION_SERVICE_DB_USERNAME} -d application_db"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
+  application-service:
+    build:
+      context: ../services
+      dockerfile: application-service/Dockerfile
+    image: application-service:latest
+    container_name: application-service
+    env_file:
+      - .env
+    ports:
+      - "8088:8080"
+    depends_on:
+      application-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  application-db:
+    image: postgres:16
+    container_name: application-db
+    environment:
+      POSTGRES_DB: application_db
+      POSTGRES_USER: ${APPLICATION_SERVICE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${APPLICATION_SERVICE_DB_PASSWORD}
+    ports:
+      - "5439:5432"
+    volumes:
+      - application_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${APPLICATION_SERVICE_DB_USERNAME} -d application_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # ── Messaging Service + Database ───────────────────────────────
   messaging-service:

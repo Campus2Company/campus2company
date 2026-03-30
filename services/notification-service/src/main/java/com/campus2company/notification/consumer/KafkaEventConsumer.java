@@ -1,6 +1,7 @@
 package com.campus2company.notification.consumer;
 
 import com.campus2company.common.event.AccountStatusChangedEvent;
+import com.campus2company.common.event.ApplicationStatusChangedEvent;
 import com.campus2company.common.event.KafkaTopics;
 import com.campus2company.common.event.MessageSentEvent;
 import com.campus2company.notification.model.NotificationType;
@@ -75,5 +76,58 @@ public class KafkaEventConsumer {
                 message,
                 null
         );
+    }
+
+    @KafkaListener(topics = KafkaTopics.APPLICATION_STATUS_CHANGED, groupId = "notification-service",
+            containerFactory = "applicationStatusListenerFactory")
+    public void handleApplicationStatusChanged(ApplicationStatusChangedEvent event) {
+        log.info("Received application.status.changed event: application={}, status={}",
+                event.getApplicationId(), event.getNewStatus());
+
+        String projectName = event.getProjectTitle() != null ? event.getProjectTitle() : "a project";
+
+        switch (event.getNewStatus()) {
+            case "PENDING" -> {
+                // Notify employer: new application received
+                notificationService.createNotification(
+                        event.getEmployerId(),
+                        NotificationType.APPLICATION_SUBMITTED,
+                        "New application received",
+                        "A student has applied to " + projectName,
+                        event.getApplicationId()
+                );
+            }
+            case "ACCEPTED" -> {
+                // Notify student: application accepted
+                notificationService.createNotification(
+                        event.getStudentId(),
+                        NotificationType.APPLICATION_ACCEPTED,
+                        "Application accepted",
+                        "Your application to " + projectName + " has been accepted!",
+                        event.getApplicationId()
+                );
+            }
+            case "REJECTED" -> {
+                // Notify student: application rejected
+                notificationService.createNotification(
+                        event.getStudentId(),
+                        NotificationType.APPLICATION_REJECTED,
+                        "Application not successful",
+                        "Your application to " + projectName + " was not successful.",
+                        event.getApplicationId()
+                );
+            }
+            case "WITHDRAWN" -> {
+                // Notify employer: student withdrew
+                notificationService.createNotification(
+                        event.getEmployerId(),
+                        NotificationType.APPLICATION_WITHDRAWN,
+                        "Application withdrawn",
+                        "A student has withdrawn their application to " + projectName,
+                        event.getApplicationId()
+                );
+            }
+            default -> log.warn("Unknown application status: {}", event.getNewStatus());
+        }
     }
 }
