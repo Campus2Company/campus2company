@@ -30,7 +30,10 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
-                        .requestMatchers("/auth/register/**", "/auth/login").permitAll()
+                        .requestMatchers("/auth/register/**",
+                                "/auth/login",
+                                "/auth/refresh",
+                                "/auth/logout").permitAll()
                         // Swagger/OpenAPI endpoints
                         .requestMatchers(
                                 "/swagger-ui.html",

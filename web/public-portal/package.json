@@ -1,0 +1,18 @@
+{
+  "name": "public-portal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build -p 3000",
+    "start": "next start -p 3000"
+  },
+  "dependencies": {
+    "lucide-react": "^1.7.0",
+    "next": "13.4.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@campus2company/shared": "file:../shared"
+  }
+}

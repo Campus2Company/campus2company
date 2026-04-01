@@ -1,5 +1,6 @@
 package com.campus2company.auth.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,12 +17,16 @@ public class LoginResponse {
     private long expiresInSeconds;
     private UserResponse user;
 
-    public static LoginResponse of(String token, long expiresInSeconds, UserResponse user) {
+    @JsonIgnore
+    private String rawRefreshToken;
+
+    public static LoginResponse of(String token, long expiresInSeconds, UserResponse user,  String rawRefreshToken) {
         return LoginResponse.builder()
                 .accessToken(token)
                 .tokenType("Bearer")
                 .expiresInSeconds(expiresInSeconds)
                 .user(user)
+                .rawRefreshToken(rawRefreshToken)
                 .build();
     }
 }
