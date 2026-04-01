@@ -21,7 +21,6 @@ async function doRefresh() {
     return data.accessToken;
 }
 
-// Use this instead of fetch() for all authenticated API calls
 export async function apiFetch(url, options = {}) {
     const token = getAccessToken();
 
@@ -39,7 +38,6 @@ export async function apiFetch(url, options = {}) {
 
     if (res.status !== 401) return res;
 
-    // Got a 401 — try a silent refresh
     if (isRefreshing) {
         return new Promise((resolve, reject) => {
             waitingQueue.push({ resolve, reject, url, options });
@@ -60,7 +58,7 @@ export async function apiFetch(url, options = {}) {
     } catch (err) {
         waitingQueue.forEach(({ reject }) => reject(err));
         waitingQueue = [];
-        window.location.href = 'http://localhost:3000/'; // back to public portal
+        window.location.href = 'http://localhost:3000/';
         throw err;
     } finally {
         isRefreshing = false;
