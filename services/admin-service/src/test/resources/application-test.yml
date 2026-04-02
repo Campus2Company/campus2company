@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:admin_test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+jwt:
+  secret: test-secret-key-at-least-32-bytes-long-for-jwt-hs256
+  expiry-minutes: 60
+
+campus2company:
+  auth:
+    base-url: http://localhost:8081

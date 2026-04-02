@@ -1,17 +1,14 @@
-package com.campus2company.auth.config;
+package com.campus2company.admin.config;
 
-import com.campus2company.auth.security.JwtAuthFilter;
+import com.campus2company.common.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -30,32 +27,17 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
-                        .requestMatchers("/auth/register/**", "/auth/login").permitAll()
-                        // Swagger/OpenAPI endpoints
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml"
                         ).permitAll()
-                        // Actuator endpoints
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
-                        // Account provisioning - platform or university admin
-                        .requestMatchers(HttpMethod.POST, "/admin/accounts")
-                        .hasAnyRole("PLATFORM_ADMIN", "UNIVERSITY_ADMIN")
-                        // Other admin endpoints - platform admin only
-                        .requestMatchers("/admin/**").hasRole("PLATFORM_ADMIN")
-                        // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

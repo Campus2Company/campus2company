@@ -34,6 +34,34 @@ public class AuthService {
     private final StudentServiceClient studentServiceClient;
     private final EmployerServiceClient employerServiceClient;
 
+    /**
+     * Creates a user account when called by an authenticated platform or university admin.
+     * Enforces which roles the caller may create.
+     */
+    @Transactional
+    public UserResponse provisionAccount(RegisterRequest request, Role callerRole) {
+        validateProvisioning(callerRole, request.getRole());
+
+        if (userAccountRepository.existsByEmail(request.getEmail())) {
+            throw new UserAlreadyExistsException(request.getEmail());
+        }
+
+        AccountStatus initialStatus = determineInitialStatus(request.getRole());
+
+        UserAccount user = UserAccount.builder()
+                .email(request.getEmail().toLowerCase().trim())
+                .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole())
+                .status(initialStatus)
+                .build();
+
+        UserAccount savedUser = userAccountRepository.save(user);
+        log.info("Account provisioned by {}: {} with role {}",
+                callerRole, savedUser.getEmail(), savedUser.getRole());
+
+        return UserResponse.from(savedUser);
+    }
+
     @Transactional
     public UserResponse register(RegisterRequest request) {
         // Block platform admin registration through public API
@@ -146,5 +174,23 @@ public class AuthService {
             case EMPLOYER -> AccountStatus.PENDING_APPROVAL;
             case PLATFORM_ADMIN -> AccountStatus.ACTIVE; // Won't reach here due to validation
         };
+    }
+
+    private void validateProvisioning(Role callerRole, Role targetRole) {
+        if (callerRole == Role.UNIVERSITY_ADMIN) {
+            if (targetRole != Role.UNIVERSITY_ADMIN && targetRole != Role.LECTURER) {
+                throw new ProvisioningForbiddenException(
+                        "University admins may only create university admins or lecturers");
+            }
+            return;
+        }
+        if (callerRole == Role.PLATFORM_ADMIN) {
+            if (targetRole == Role.STUDENT || targetRole == Role.EMPLOYER) {
+                throw new ProvisioningForbiddenException(
+                        "Students and employers must register through the public registration flow");
+            }
+            return;
+        }
+        throw new ProvisioningForbiddenException("Provisioning is not allowed for this account");
     }
 }
