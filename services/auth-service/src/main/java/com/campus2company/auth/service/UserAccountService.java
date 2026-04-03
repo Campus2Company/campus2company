@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -35,6 +36,12 @@ public class UserAccountService {
                 .orElseThrow(() -> new UserNotFoundException(email));
     }
 
+    @Transactional(readOnly = true)
+    public List<UserAccount> listPendingEmployers() {
+        return userAccountRepository.findByRoleAndStatusOrderByCreatedAtAsc(
+                Role.EMPLOYER, AccountStatus.PENDING_APPROVAL);
+    }
+
     @Transactional
     public UserAccount approveEmployer(UUID userId) {
         UserAccount user = findById(userId);
@@ -47,6 +54,23 @@ public class UserAccountService {
         user.setStatus(AccountStatus.ACTIVE);
         UserAccount saved = userAccountRepository.save(user);
         log.info("Employer account approved: {}", user.getEmail());
+
+        publishAccountStatusEvent(saved, previousStatus);
+        return saved;
+    }
+
+    @Transactional
+    public UserAccount rejectEmployerRegistration(UUID userId) {
+        UserAccount user = findById(userId);
+
+        if (user.getRole() != Role.EMPLOYER || user.getStatus() != AccountStatus.PENDING_APPROVAL) {
+            throw InvalidStatusTransitionException.forReject(user.getRole(), user.getStatus());
+        }
+
+        String previousStatus = user.getStatus().name();
+        user.setStatus(AccountStatus.REJECTED);
+        UserAccount saved = userAccountRepository.save(user);
+        log.info("Employer registration rejected: {}", user.getEmail());
 
         publishAccountStatusEvent(saved, previousStatus);
         return saved;

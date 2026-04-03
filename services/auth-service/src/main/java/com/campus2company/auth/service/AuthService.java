@@ -2,6 +2,7 @@ package com.campus2company.auth.service;
 
 import com.campus2company.auth.dto.request.EmployerRegisterRequest;
 import com.campus2company.auth.dto.request.LoginRequest;
+import com.campus2company.auth.dto.request.ProvisionUniversityAdminRequest;
 import com.campus2company.auth.dto.request.RegisterRequest;
 import com.campus2company.auth.dto.request.StudentRegisterRequest;
 import com.campus2company.auth.dto.response.LoginResponse;
@@ -15,6 +16,7 @@ import com.campus2company.auth.client.StudentServiceClient;
 import com.campus2company.auth.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,31 +37,31 @@ public class AuthService {
     private final EmployerServiceClient employerServiceClient;
 
     /**
-     * Creates a user account when called by an authenticated platform or university admin.
-     * Enforces which roles the caller may create.
+     * Creates a UNIVERSITY_ADMIN row keyed by {@code id} (must match platform admin-service profile).
      */
     @Transactional
-    public UserResponse provisionAccount(RegisterRequest request, Role callerRole) {
-        validateProvisioning(callerRole, request.getRole());
-
-        if (userAccountRepository.existsByEmail(request.getEmail())) {
-            throw new UserAlreadyExistsException(request.getEmail());
+    public UserResponse provisionUniversityAdmin(ProvisionUniversityAdminRequest request) {
+        UUID id = request.getId();
+        if (userAccountRepository.existsById(id)) {
+            throw new ApiException("User with id '" + id + "' already exists", HttpStatus.CONFLICT);
         }
 
-        AccountStatus initialStatus = determineInitialStatus(request.getRole());
+        String normalizedEmail = request.getEmail().toLowerCase().trim();
+        if (userAccountRepository.existsByEmail(normalizedEmail)) {
+            throw new UserAlreadyExistsException(normalizedEmail);
+        }
 
         UserAccount user = UserAccount.builder()
-                .email(request.getEmail().toLowerCase().trim())
+                .id(id)
+                .email(normalizedEmail)
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
-                .status(initialStatus)
+                .role(Role.UNIVERSITY_ADMIN)
+                .status(AccountStatus.ACTIVE)
                 .build();
 
-        UserAccount savedUser = userAccountRepository.save(user);
-        log.info("Account provisioned by {}: {} with role {}",
-                callerRole, savedUser.getEmail(), savedUser.getRole());
-
-        return UserResponse.from(savedUser);
+        UserAccount saved = userAccountRepository.save(user);
+        log.info("University admin provisioned in auth: {} ({})", saved.getEmail(), saved.getId());
+        return UserResponse.from(saved);
     }
 
     @Transactional
@@ -174,23 +176,5 @@ public class AuthService {
             case EMPLOYER -> AccountStatus.PENDING_APPROVAL;
             case PLATFORM_ADMIN -> AccountStatus.ACTIVE; // Won't reach here due to validation
         };
-    }
-
-    private void validateProvisioning(Role callerRole, Role targetRole) {
-        if (callerRole == Role.UNIVERSITY_ADMIN) {
-            if (targetRole != Role.UNIVERSITY_ADMIN && targetRole != Role.LECTURER) {
-                throw new ProvisioningForbiddenException(
-                        "University admins may only create university admins or lecturers");
-            }
-            return;
-        }
-        if (callerRole == Role.PLATFORM_ADMIN) {
-            if (targetRole == Role.STUDENT || targetRole == Role.EMPLOYER) {
-                throw new ProvisioningForbiddenException(
-                        "Students and employers must register through the public registration flow");
-            }
-            return;
-        }
-        throw new ProvisioningForbiddenException("Provisioning is not allowed for this account");
     }
 }

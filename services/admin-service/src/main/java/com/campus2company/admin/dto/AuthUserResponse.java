@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * Subset of auth-service {@code UserResponse} for RestClient deserialization.
+ * {@code email} is included so platform admins can identify pending employers (list/approve/reject).
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

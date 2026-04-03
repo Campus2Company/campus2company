@@ -8,9 +8,11 @@ spring:
     hibernate:
       ddl-auto: create-drop
 
+# Align with main app: CI/production should set JWT_SECRET / JWT_EXPIRY_MINUTES.
+# Defaults keep `mvn test` working when env vars are unset.
 jwt:
-  secret: test-secret-key-at-least-32-bytes-long-for-jwt-hs256
-  expiry-minutes: 60
+  secret: ${JWT_SECRET:test-secret-key-at-least-32-bytes-long-for-jwt-hs256}
+  expiry-minutes: ${JWT_EXPIRY_MINUTES:60}
 
 campus2company:
   auth:

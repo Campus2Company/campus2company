@@ -14,26 +14,30 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "lecturers")
+@Table(name = "university_admin_profiles")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Lecturer {
+public class UniversityAdminProfile {
 
+    /** Same UUID as auth user_accounts.id */
     @Id
-    @Column(name = "auth_user_id", nullable = false, updatable = false)
-    private UUID authUserId;
+    @Column(nullable = false, updatable = false)
+    private UUID id;
 
     @Column(nullable = false)
     private String email;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    @Column(name = "university_id", nullable = false)
+    private Long universityId;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;

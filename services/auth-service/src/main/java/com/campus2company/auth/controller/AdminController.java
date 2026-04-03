@@ -1,8 +1,7 @@
 package com.campus2company.auth.controller;
 
-import com.campus2company.auth.dto.request.RegisterRequest;
+import com.campus2company.auth.dto.request.ProvisionUniversityAdminRequest;
 import com.campus2company.auth.dto.response.UserResponse;
-import com.campus2company.auth.security.UserPrincipal;
 import com.campus2company.auth.service.AuthService;
 import com.campus2company.auth.service.UserAccountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,9 +14,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -30,23 +35,30 @@ public class AdminController {
     private final UserAccountService userAccountService;
     private final AuthService authService;
 
-    @PostMapping("/accounts")
-    @PreAuthorize("hasAnyRole('PLATFORM_ADMIN','UNIVERSITY_ADMIN')")
-    @Operation(summary = "Provision a user account",
-            description = "Creates a new account with a privileged role. "
-                    + "University admins may create university admins and lecturers. "
-                    + "Platform admins may also create platform admins.")
+    @PostMapping("/university-admins")
+    @PreAuthorize("hasRole('PLATFORM_ADMIN')")
+    @Operation(summary = "Provision a university admin in auth",
+            description = "Creates UNIVERSITY_ADMIN with a fixed user id (must match admin-service profile row).")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Account created"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "403", description = "Caller cannot create this role"),
-            @ApiResponse(responseCode = "409", description = "Email already registered")
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "409", description = "Id or email already registered")
     })
-    public ResponseEntity<UserResponse> provisionAccount(
-            @Valid @RequestBody RegisterRequest request,
-            @AuthenticationPrincipal UserPrincipal principal) {
-        UserResponse response = authService.provisionAccount(request, principal.getRole());
+    public ResponseEntity<UserResponse> provisionUniversityAdmin(
+            @Valid @RequestBody ProvisionUniversityAdminRequest request) {
+        UserResponse response = authService.provisionUniversityAdmin(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/employers/pending")
+    @PreAuthorize("hasRole('PLATFORM_ADMIN')")
+    @Operation(summary = "List employers awaiting approval")
+    public ResponseEntity<List<UserResponse>> listPendingEmployers() {
+        List<UserResponse> body = userAccountService.listPendingEmployers().stream()
+                .map(UserResponse::from)
+                .toList();
+        return ResponseEntity.ok(body);
     }
 
     @PutMapping("/employers/{userId}/approve")
@@ -63,6 +75,21 @@ public class AdminController {
     })
     public ResponseEntity<UserResponse> approveEmployer(@PathVariable UUID userId) {
         UserResponse response = UserResponse.from(userAccountService.approveEmployer(userId));
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/employers/{userId}/reject")
+    @PreAuthorize("hasRole('PLATFORM_ADMIN')")
+    @Operation(summary = "Reject employer registration",
+            description = "Sets an EMPLOYER account from PENDING_APPROVAL to REJECTED.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Employer rejected"),
+            @ApiResponse(responseCode = "400", description = "Invalid status transition"),
+            @ApiResponse(responseCode = "403", description = "Not authorized"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<UserResponse> rejectEmployer(@PathVariable UUID userId) {
+        UserResponse response = UserResponse.from(userAccountService.rejectEmployerRegistration(userId));
         return ResponseEntity.ok(response);
     }
 

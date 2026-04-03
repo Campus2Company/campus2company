@@ -4,7 +4,6 @@ import com.campus2company.auth.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -41,10 +40,7 @@ public class SecurityConfig {
                         ).permitAll()
                         // Actuator endpoints
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
-                        // Account provisioning - platform or university admin
-                        .requestMatchers(HttpMethod.POST, "/admin/accounts")
-                        .hasAnyRole("PLATFORM_ADMIN", "UNIVERSITY_ADMIN")
-                        // Other admin endpoints - platform admin only
+                        // Platform admin-only operations (university admin provisioning, employer review, ...)
                         .requestMatchers("/admin/**").hasRole("PLATFORM_ADMIN")
                         // All other endpoints require authentication
                         .anyRequest().authenticated()

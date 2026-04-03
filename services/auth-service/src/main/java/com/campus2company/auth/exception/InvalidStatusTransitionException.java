@@ -15,4 +15,10 @@ public class InvalidStatusTransitionException extends ApiException {
                 "Cannot approve: user has role " + role + " and status " + status +
                         ". Only EMPLOYER accounts with PENDING_APPROVAL status can be approved.");
     }
+
+    public static InvalidStatusTransitionException forReject(Role role, AccountStatus status) {
+        return new InvalidStatusTransitionException(
+                "Cannot reject: user has role " + role + " and status " + status +
+                        ". Only EMPLOYER accounts with PENDING_APPROVAL status can be rejected.");
+    }
 }
