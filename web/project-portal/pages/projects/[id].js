@@ -36,12 +36,10 @@ export default function ProjectDetail() {
     if (!id) return;
     async function fetchProject() {
       try {
-        const res = await apiFetch(`${API_BASE}/projects/all?size=100`);
+        const res = await apiFetch(`${API_BASE}/projects/${id}`);
         if (!res.ok) throw new Error('Failed to load project');
         const data = await res.json();
-        const found = (data.content || []).find((p) => p.id === id);
-        if (!found) throw new Error('Project not found');
-        setProject(found);
+        setProject(data);
       } catch (err) {
         setError(err.message);
       } finally {
