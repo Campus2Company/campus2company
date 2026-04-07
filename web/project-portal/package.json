@@ -1,12 +1,12 @@
 {
-  "name": "student-portal",
+  "name": "project-portal",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev -p 3001",
-    "build": "next build -p 3001",
-    "start": "next start -p 3001"
+    "dev": "next dev -p 3007",
+    "build": "next build -p 3007",
+    "start": "next start -p 3007"
   },
   "dependencies": {
     "next": "13.4.0",

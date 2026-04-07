@@ -1,5 +1,5 @@
-import NavBar from '../components/NavBar';
-import Footer from '../components/Footer';
+import NavBar from '../../shared/components/NavBar';
+import Footer from '../../shared/components/Footer';
 import DashboardStats from '../components/DashboardStats';
 
 const stats = [
