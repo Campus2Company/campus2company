@@ -17,6 +17,7 @@ import com.campus2company.auth.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final StudentServiceClient studentServiceClient;
     private final EmployerServiceClient employerServiceClient;
+    private final RefreshTokenService refreshTokenService;
 
     /**
      * Creates a UNIVERSITY_ADMIN row keyed by {@code id} (must match platform admin-service profile).
@@ -72,7 +74,7 @@ public class AuthService {
         }
 
         // Check for existing user
-        if (userAccountRepository.existsByEmail(request.getEmail())) {
+        if (userAccountRepository.existsByEmail(request.getEmail().toLowerCase().trim())) {
             throw new UserAlreadyExistsException(request.getEmail());
         }
 
@@ -125,9 +127,35 @@ public class AuthService {
         // Generate JWT
         String token = jwtService.generateToken(user);
 
+        String rawRefreshToken = refreshTokenService.createAndStore(user.getId());
+
         log.info("User logged in: {}", user.getEmail());
 
-        return LoginResponse.of(token, jwtService.getExpirySeconds(), UserResponse.from(user));
+        return LoginResponse.of(token, jwtService.getExpirySeconds(), UserResponse.from(user), rawRefreshToken);
+    }
+
+    public LoginResponse refresh(String rawToken) {
+        UserAccount user = refreshTokenService.validateAndGetUser(rawToken);
+
+        if (user.getStatus() != AccountStatus.ACTIVE) {
+            throw new AccountNotActiveException(user.getStatus());
+        }
+
+        String newAccessToken = jwtService.generateToken(user);
+        String newRawRefreshToken = refreshTokenService.rotate(rawToken);
+
+        log.info("Token refreshed for user: {}", user.getEmail());
+
+        return LoginResponse.of(newAccessToken, jwtService.getExpirySeconds(),
+                UserResponse.from(user), newRawRefreshToken);
+    }
+
+    public ResponseCookie logout(String rawToken) {
+        if (rawToken != null) {
+            refreshTokenService.revoke(rawToken);
+            log.info("Refresh token revoked on logout");
+        }
+        return refreshTokenService.buildClearCookie();
     }
 
     private void handleStudentRegistration(UUID authUserId, RegisterRequest request, String token) {

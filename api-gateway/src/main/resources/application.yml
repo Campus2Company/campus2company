@@ -11,7 +11,7 @@ jwt:
 
 # CORS Configuration
 cors:
-  allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:5173}
+  allowed-origins: ${CORS_ORIGINS:http://localhost:3000}
 
 management:
   endpoints:

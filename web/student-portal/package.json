@@ -2,15 +2,17 @@
   "name": "student-portal",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "dev": "next dev -p 3001",
+    "build": "next build -p 3001",
+    "start": "next start -p 3001"
   },
   "dependencies": {
     "next": "13.4.0",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "@campus2company/shared": "file:../shared"
   },
   "devDependencies": {
     "@types/node": "25.3.3",
