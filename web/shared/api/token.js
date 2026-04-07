@@ -58,7 +58,7 @@ export async function apiFetch(url, options = {}) {
     } catch (err) {
         waitingQueue.forEach(({ reject }) => reject(err));
         waitingQueue = [];
-        window.location.href = 'http://localhost:3000/';
+        window.location.href = process.env.NEXT_PUBLIC_PUBLIC_PORTAL_URL || '/';
         throw err;
     } finally {
         isRefreshing = false;

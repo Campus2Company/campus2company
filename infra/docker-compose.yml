@@ -167,36 +167,36 @@ services:
       retries: 5
 
   # ── University Admin Service + Database ───────────────────────
-#  university-admin-service:
-#    build:
-#      context: ../services
-#      dockerfile: university-admin-service/Dockerfile
-#    image: university-admin-service:latest
-#    container_name: university-admin-service
-#    env_file:
-#      - .env
-#    ports:
-#      - "8085:8080"
-#    depends_on:
-#      university-admin-db:
-#        condition: service_healthy
-#
-#  university-admin-db:
-#    image: postgres:16
-#    container_name: university-admin-db
-#    environment:
-#      POSTGRES_DB: university_admin_db
-#      POSTGRES_USER: ${UNIVERSITY_ADMIN_SERVICE_DB_USERNAME}
-#      POSTGRES_PASSWORD: ${UNIVERSITY_ADMIN_SERVICE_DB_PASSWORD}
-#    ports:
-#      - "5436:5432"
-#    volumes:
-#      - university_admin_db_data:/var/lib/postgresql/data
-#    healthcheck:
-#      test: ["CMD-SHELL", "pg_isready -U ${UNIVERSITY_ADMIN_SERVICE_DB_USERNAME} -d university_admin_db"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
+  university-admin-service:
+    build:
+      context: ../services
+      dockerfile: university-admin-service/Dockerfile
+    image: university-admin-service:latest
+    container_name: university-admin-service
+    env_file:
+      - .env
+    ports:
+      - "8085:8080"
+    depends_on:
+      university-admin-db:
+        condition: service_healthy
+
+  university-admin-db:
+    image: postgres:16
+    container_name: university-admin-db
+    environment:
+      POSTGRES_DB: university_admin_db
+      POSTGRES_USER: ${UNIVERSITY_ADMIN_SERVICE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${UNIVERSITY_ADMIN_SERVICE_DB_PASSWORD}
+    ports:
+      - "5436:5432"
+    volumes:
+      - university_admin_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${UNIVERSITY_ADMIN_SERVICE_DB_USERNAME} -d university_admin_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # ── Platform Admin Service + Database ─────────────────────────
 #  platform-admin-service:
