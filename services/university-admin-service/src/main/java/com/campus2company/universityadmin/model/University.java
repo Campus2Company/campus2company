@@ -9,34 +9,32 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "lecturer_profiles")
+@Table(name = "universities")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LecturerProfile {
+
+public class University {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private UUID userId;
-
-    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String email;
+    @Column(nullable = false, unique = true)
+    private String domain;
 
-    private String department;
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
-    private String facultyArea;
-
-    private UUID universityProfileId;
+    private String country;
 
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp

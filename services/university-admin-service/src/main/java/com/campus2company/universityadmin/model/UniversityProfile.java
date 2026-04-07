@@ -22,6 +22,9 @@ public class UniversityProfile {
     private UUID id;
 
     @Column(nullable = false, unique = true)
+    private UUID universityId;
+
+    @Column(nullable = false, unique = true)
     private UUID userId;
 
     @Column(nullable = false)
@@ -36,6 +39,7 @@ public class UniversityProfile {
     private String country;
 
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp

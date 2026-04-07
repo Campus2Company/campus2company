@@ -1,13 +1,13 @@
 package com.campus2company.universityadmin.controller;
 
-import com.campus2company.universityadmin.dto.request.AssignLecturerRequest;
 import com.campus2company.universityadmin.dto.request.CreateUniversityProfileRequest;
 import com.campus2company.universityadmin.dto.request.UpdateUniversityProfileRequest;
-import com.campus2company.universityadmin.dto.response.LecturerProfileResponse;
-import com.campus2company.universityadmin.dto.response.SupervisorAssignmentResponse;
 import com.campus2company.universityadmin.dto.response.UniversityProfileResponse;
-import com.campus2company.universityadmin.security.UserPrincipal;
 import com.campus2company.universityadmin.service.UniversityAdminService;
+import com.campus2company.common.security.UserPrincipal;
+import com.campus2company.universityadmin.dto.request.CreateUniversityRequest;
+import com.campus2company.universityadmin.dto.response.UniversityResponse;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -22,12 +22,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/university")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "University Admin", description = "University admin profile and supervisor assignment endpoints")
+@Tag(name = "University Admin", description = "University admin profile management endpoints")
 public class UniversityAdminController {
 
     private final UniversityAdminService service;
@@ -70,32 +71,56 @@ public class UniversityAdminController {
         return ResponseEntity.ok(service.updateProfile(principal.getId(), request));
     }
 
-    @PostMapping("/assignments")
+    @DeleteMapping("/profile")
     @PreAuthorize("hasRole('UNIVERSITY_ADMIN')")
-    @Operation(summary = "Assign a lecturer to a project")
+    @Operation(summary = "Delete university profile")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Lecturer assigned successfully"),
-            @ApiResponse(responseCode = "409", description = "Assignment already exists")
+            @ApiResponse(responseCode = "204", description = "Profile deleted"),
+            @ApiResponse(responseCode = "404", description = "Profile not found")
     })
-    public ResponseEntity<SupervisorAssignmentResponse> assignLecturer(
-            @Valid @RequestBody AssignLecturerRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.assignLecturer(request));
-    }
-
-    @GetMapping("/assignments")
-    @PreAuthorize("hasRole('UNIVERSITY_ADMIN')")
-    @Operation(summary = "Get all supervisor assignments")
-    @ApiResponse(responseCode = "200", description = "List of assignments")
-    public ResponseEntity<List<SupervisorAssignmentResponse>> getAllAssignments() {
-        return ResponseEntity.ok(service.getAllAssignments());
-    }
-
-    @GetMapping("/lecturers")
-    @PreAuthorize("hasRole('UNIVERSITY_ADMIN')")
-    @Operation(summary = "Get all lecturers at this university")
-    @ApiResponse(responseCode = "200", description = "List of lecturers")
-    public ResponseEntity<List<LecturerProfileResponse>> getAllLecturers(
+    public ResponseEntity<Void> deleteProfile(
             @AuthenticationPrincipal UserPrincipal principal) {
-        return ResponseEntity.ok(service.getAllLecturers(principal.getId()));
+        service.deleteProfile(principal.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/domain/{domain}")
+    @Operation(summary = "Get university profile by domain")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Profile retrieved"),
+            @ApiResponse(responseCode = "404", description = "Profile not found")
+    })
+    public ResponseEntity<UniversityProfileResponse> getByDomain(@PathVariable String domain) {
+        return ResponseEntity.ok(service.getProfileByDomain(domain));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('PLATFORM_ADMIN')")
+    @Operation(summary = "Create a university")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "University created successfully"),
+            @ApiResponse(responseCode = "409", description = "University already exists")
+    })
+    public ResponseEntity<UniversityResponse> createUniversity(
+            @Valid @RequestBody CreateUniversityRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.createUniversity(request));
+    }
+
+    @GetMapping
+    @Operation(summary = "Get all universities")
+    @ApiResponse(responseCode = "200", description = "List of universities")
+    public ResponseEntity<List<UniversityResponse>> getAllUniversities() {
+        return ResponseEntity.ok(service.getAllUniversities());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get university by ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "University retrieved"),
+            @ApiResponse(responseCode = "404", description = "University not found")
+    })
+    public ResponseEntity<UniversityResponse> getUniversityById(@PathVariable UUID id) {
+        return ResponseEntity.ok(service.getUniversityById(id));
     }
 }

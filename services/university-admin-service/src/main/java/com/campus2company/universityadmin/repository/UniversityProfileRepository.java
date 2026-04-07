@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface UniversityProfileRepository extends JpaRepository<UniversityProfile, UUID> {
     Optional<UniversityProfile> findByUserId(UUID userId);
+    Optional<UniversityProfile> findByDomain(String domain);
     boolean existsByUserId(UUID userId);
 }

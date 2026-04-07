@@ -12,11 +12,4 @@ public class ResourceNotFoundException extends RuntimeException {
         return new ResourceNotFoundException("University profile not found for userId: " + userId);
     }
 
-    public static ResourceNotFoundException lecturerProfile(UUID userId) {
-        return new ResourceNotFoundException("Lecturer profile not found for userId: " + userId);
-    }
-
-    public static ResourceNotFoundException assignment(UUID id) {
-        return new ResourceNotFoundException("Supervisor assignment not found for id: " + id);
-    }
 }

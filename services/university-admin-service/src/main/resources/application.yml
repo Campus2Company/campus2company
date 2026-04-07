@@ -7,8 +7,8 @@ spring:
 
   datasource:
     url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${UNIVERSITY_ADMIN_SERVICE_DB_USERNAME}
+    password: ${UNIVERSITY_ADMIN_SERVICE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -22,6 +22,7 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET}
+  expiry-minutes: ${JWT_EXPIRY_MINUTES:60}
 
 management:
   endpoints:

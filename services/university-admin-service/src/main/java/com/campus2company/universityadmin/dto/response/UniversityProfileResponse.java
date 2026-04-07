@@ -12,6 +12,7 @@ import java.util.UUID;
 public class UniversityProfileResponse {
 
     private UUID id;
+    private UUID universityId;
     private UUID userId;
     private String name;
     private String domain;
@@ -23,6 +24,7 @@ public class UniversityProfileResponse {
     public static UniversityProfileResponse from(UniversityProfile profile) {
         return UniversityProfileResponse.builder()
                 .id(profile.getId())
+                .universityId(profile.getUniversityId())
                 .userId(profile.getUserId())
                 .name(profile.getName())
                 .domain(profile.getDomain())

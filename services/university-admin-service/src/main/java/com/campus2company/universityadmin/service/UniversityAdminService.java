@@ -1,27 +1,27 @@
 package com.campus2company.universityadmin.service;
 
-import com.campus2company.universityadmin.dto.request.AssignLecturerRequest;
 import com.campus2company.universityadmin.dto.request.CreateUniversityProfileRequest;
 import com.campus2company.universityadmin.dto.request.UpdateUniversityProfileRequest;
-import com.campus2company.universityadmin.dto.response.LecturerProfileResponse;
-import com.campus2company.universityadmin.dto.response.SupervisorAssignmentResponse;
 import com.campus2company.universityadmin.dto.response.UniversityProfileResponse;
-import com.campus2company.universityadmin.exception.AssignmentAlreadyExistsException;
 import com.campus2company.universityadmin.exception.ProfileAlreadyExistsException;
 import com.campus2company.universityadmin.exception.ResourceNotFoundException;
-import com.campus2company.universityadmin.model.AssignmentStatus;
-import com.campus2company.universityadmin.model.SupervisorAssignment;
 import com.campus2company.universityadmin.model.UniversityProfile;
-import com.campus2company.universityadmin.repository.LecturerProfileRepository;
-import com.campus2company.universityadmin.repository.SupervisorAssignmentRepository;
 import com.campus2company.universityadmin.repository.UniversityProfileRepository;
+
+import com.campus2company.universityadmin.model.University;
+import com.campus2company.universityadmin.repository.UniversityRepository;
+import com.campus2company.universityadmin.dto.request.CreateUniversityRequest;
+import com.campus2company.universityadmin.dto.response.UniversityResponse;
+
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+
 import java.util.UUID;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -29,8 +29,8 @@ import java.util.UUID;
 public class UniversityAdminService {
 
     private final UniversityProfileRepository universityProfileRepository;
-    private final LecturerProfileRepository lecturerProfileRepository;
-    private final SupervisorAssignmentRepository supervisorAssignmentRepository;
+    private final UniversityRepository universityRepository;
+
 
     @Transactional
     public UniversityProfileResponse createProfile(UUID userId, CreateUniversityProfileRequest request) {
@@ -40,6 +40,7 @@ public class UniversityAdminService {
 
         UniversityProfile profile = UniversityProfile.builder()
                 .userId(userId)
+                .universityId(request.getUniversityId())
                 .name(request.getName())
                 .domain(request.getDomain())
                 .description(request.getDescription())
@@ -73,38 +74,56 @@ public class UniversityAdminService {
         return UniversityProfileResponse.from(saved);
     }
 
+
     @Transactional
-    public SupervisorAssignmentResponse assignLecturer(AssignLecturerRequest request) {
-        if (supervisorAssignmentRepository.existsByProjectId(request.getProjectId())) {
-            throw new AssignmentAlreadyExistsException("A supervisor is already assigned to projectId: " + request.getProjectId());
-        }
-
-        SupervisorAssignment assignment = SupervisorAssignment.builder()
-                .lecturerProfileId(request.getLecturerProfileId())
-                .projectId(request.getProjectId())
-                .studentUserId(request.getStudentUserId())
-                .status(AssignmentStatus.ACTIVE)
-                .build();
-
-        SupervisorAssignment saved = supervisorAssignmentRepository.save(assignment);
-        log.info("Assigned lecturer {} to project {}", request.getLecturerProfileId(), request.getProjectId());
-        return SupervisorAssignmentResponse.from(saved);
-    }
-
-    @Transactional(readOnly = true)
-    public List<SupervisorAssignmentResponse> getAllAssignments() {
-        return supervisorAssignmentRepository.findAll().stream()
-                .map(SupervisorAssignmentResponse::from)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<LecturerProfileResponse> getAllLecturers(UUID userId) {
+    public void deleteProfile(UUID userId) {
         UniversityProfile profile = universityProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> ResourceNotFoundException.universityProfile(userId));
+        universityProfileRepository.delete(profile);
+        log.info("Deleted university profile for userId: {}", userId);
+    }
 
-        return lecturerProfileRepository.findAllByUniversityProfileId(profile.getId()).stream()
-                .map(LecturerProfileResponse::from)
+    @Transactional(readOnly = true)
+    public UniversityProfileResponse getProfileByDomain(String domain) {
+        return UniversityProfileResponse.from(
+                universityProfileRepository.findByDomain(domain)
+                        .orElseThrow(() -> new ResourceNotFoundException("University profile not found for domain: " + domain))
+        );
+    }
+
+    @Transactional
+    public UniversityResponse createUniversity(CreateUniversityRequest request) {
+        if (universityRepository.existsByName(request.getName())) {
+            throw new ProfileAlreadyExistsException("University already exists with name: " + request.getName());
+        }
+        if (universityRepository.existsByDomain(request.getDomain())) {
+            throw new ProfileAlreadyExistsException("University already exists with domain: " + request.getDomain());
+        }
+
+        University university = University.builder()
+                .name(request.getName())
+                .domain(request.getDomain())
+                .description(request.getDescription())
+                .country(request.getCountry())
+                .build();
+
+        University saved = universityRepository.save(university);
+        log.info("Created university: {}", saved.getName());
+        return UniversityResponse.from(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UniversityResponse> getAllUniversities() {
+        return universityRepository.findAll().stream()
+                .map(UniversityResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public UniversityResponse getUniversityById(UUID id) {
+        return UniversityResponse.from(
+                universityRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("University not found for id: " + id))
+        );
     }
 }
