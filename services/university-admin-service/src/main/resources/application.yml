@@ -6,7 +6,7 @@ spring:
     name: university-admin-service
 
   datasource:
-    url: ${DB_URL}
+    url: ${UNIVERSITY_ADMIN_SERVICE_DB_URL}
     username: ${UNIVERSITY_ADMIN_SERVICE_DB_USERNAME}
     password: ${UNIVERSITY_ADMIN_SERVICE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver

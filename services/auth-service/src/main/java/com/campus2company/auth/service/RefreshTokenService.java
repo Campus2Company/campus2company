@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
@@ -41,6 +42,7 @@ public class RefreshTokenService {
         return rawToken;
     }
 
+    @Transactional
     public UserAccount validateAndGetUser(String rawToken) {
         String hash = sha256(rawToken);
 
