@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:admin_test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+# Align with main app: CI/production should set JWT_SECRET / JWT_EXPIRY_MINUTES.
+# Defaults keep `mvn test` working when env vars are unset.
+jwt:
+  secret: ${JWT_SECRET:test-secret-key-at-least-32-bytes-long-for-jwt-hs256}
+  expiry-minutes: ${JWT_EXPIRY_MINUTES:60}
+
+campus2company:
+  auth:
+    base-url: http://localhost:8081

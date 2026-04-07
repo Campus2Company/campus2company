@@ -110,6 +110,42 @@ services:
       timeout: 5s
       retries: 5
 
+  # ── Admin Service + Database ────────────────────────────────────
+  admin-service:
+    build:
+      context: ../services
+      dockerfile: admin-service/Dockerfile
+    image: admin-service:latest
+    container_name: admin-service
+    env_file:
+      - .env
+    ports:
+      - "8091:8080"
+    environment:
+      AUTH_SERVICE_BASE_URL: ${AUTH_SERVICE_BASE_URL:-http://auth-service:8080}
+    depends_on:
+      admin-db:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+
+  admin-db:
+    image: postgres:16
+    container_name: admin-db
+    environment:
+      POSTGRES_DB: admin_db
+      POSTGRES_USER: ${ADMIN_SERVICE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${ADMIN_SERVICE_DB_PASSWORD}
+    ports:
+      - "5442:5432"
+    volumes:
+      - admin_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ADMIN_SERVICE_DB_USERNAME} -d admin_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # ── Kafka (Event Bus) ──────────────────────────────────────────
   kafka:
     image: apache/kafka:3.9.0
@@ -368,6 +404,7 @@ volumes:
   auth_db_data:
   student_db_data:
   employer_db_data:
+  admin_db_data:
   lecturer_db_data:
   university_admin_db_data:
   platform_admin_db_data:

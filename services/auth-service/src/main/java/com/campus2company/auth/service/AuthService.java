@@ -2,6 +2,7 @@ package com.campus2company.auth.service;
 
 import com.campus2company.auth.dto.request.EmployerRegisterRequest;
 import com.campus2company.auth.dto.request.LoginRequest;
+import com.campus2company.auth.dto.request.ProvisionUniversityAdminRequest;
 import com.campus2company.auth.dto.request.RegisterRequest;
 import com.campus2company.auth.dto.request.StudentRegisterRequest;
 import com.campus2company.auth.dto.response.LoginResponse;
@@ -15,6 +16,7 @@ import com.campus2company.auth.client.StudentServiceClient;
 import com.campus2company.auth.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,34 @@ public class AuthService {
     private final StudentServiceClient studentServiceClient;
     private final EmployerServiceClient employerServiceClient;
     private final RefreshTokenService refreshTokenService;
+
+    /**
+     * Creates a UNIVERSITY_ADMIN row keyed by {@code id} (must match platform admin-service profile).
+     */
+    @Transactional
+    public UserResponse provisionUniversityAdmin(ProvisionUniversityAdminRequest request) {
+        UUID id = request.getId();
+        if (userAccountRepository.existsById(id)) {
+            throw new ApiException("User with id '" + id + "' already exists", HttpStatus.CONFLICT);
+        }
+
+        String normalizedEmail = request.getEmail().toLowerCase().trim();
+        if (userAccountRepository.existsByEmail(normalizedEmail)) {
+            throw new UserAlreadyExistsException(normalizedEmail);
+        }
+
+        UserAccount user = UserAccount.builder()
+                .id(id)
+                .email(normalizedEmail)
+                .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .role(Role.UNIVERSITY_ADMIN)
+                .status(AccountStatus.ACTIVE)
+                .build();
+
+        UserAccount saved = userAccountRepository.save(user);
+        log.info("University admin provisioned in auth: {} ({})", saved.getEmail(), saved.getId());
+        return UserResponse.from(saved);
+    }
 
     @Transactional
     public UserResponse register(RegisterRequest request) {
