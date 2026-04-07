@@ -26,9 +26,9 @@ public class GatewayConfig {
                 .route("university-admin-service", r -> r
                         .path("/university-admins/**")
                         .uri("http://university-admin-service:8080"))
-                .route("platform-admin-service", r -> r
-                        .path("/platform-admins/**")
-                        .uri("http://platform-admin-service:8080"))
+                .route("admin-service", r -> r
+                        .path("/admin-ops/**")
+                        .uri("http://admin-service:8080"))
                 .route("project-service", r -> r
                         .path("/projects/**")
                         .uri("http://project-service:8080"))

@@ -60,6 +60,11 @@ public class ProjectController {
         return ResponseEntity.ok(service.archiveProjectById(id, principal.getId()));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ProjectResponse> getProjectById(@PathVariable UUID id) {
+        return ResponseEntity.ok(service.mapToResponse(service.getProjectById(id)));
+    }
+
     // Example: /projects?status=OPEN&category=SOFTWARE_ENGINEERING&studyLevel=ANY?page=0&size=20&sort=createdAt,desc
     @GetMapping("/all")
     public ResponseEntity<Page<ProjectResponse>> getAllProjects(
