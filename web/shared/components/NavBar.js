@@ -45,8 +45,8 @@ export default function NavBar() {
   const getChatUrl = () => {
     if (!user) return null;
     switch (user.role) {
-      case 'STUDENT': return `${STUDENT_PORTAL_URL}/messages`;
-      case 'EMPLOYER': return `${EMPLOYER_PORTAL_URL}/messages`;
+      case 'STUDENT': return `${STUDENT_PORTAL_URL}/chat`;
+      case 'EMPLOYER': return `${EMPLOYER_PORTAL_URL}/chat`;
       default: return null;
     }
   };
