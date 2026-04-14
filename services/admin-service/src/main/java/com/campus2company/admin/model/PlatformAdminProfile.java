@@ -14,20 +14,26 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "university_admin_profiles")
+@Table(
+        name = "platform_admin_profiles",
+        uniqueConstraints = @jakarta.persistence.UniqueConstraint(
+                name = "uk_platform_admin_profiles_email",
+                columnNames = "email"
+        )
+)
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UniversityAdminProfile {
+public class PlatformAdminProfile {
 
     /** Same UUID as auth user_accounts.id */
     @Id
     @Column(nullable = false, updatable = false)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(name = "first_name", nullable = false)
