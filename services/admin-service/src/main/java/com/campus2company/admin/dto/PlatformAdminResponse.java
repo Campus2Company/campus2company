@@ -1,6 +1,6 @@
 package com.campus2company.admin.dto;
 
-import com.campus2company.admin.model.UniversityAdminProfile;
+import com.campus2company.admin.model.PlatformAdminProfile;
 import com.campus2company.common.model.AccountStatus;
 import com.campus2company.common.model.Role;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UniversityAdminResponse {
+public class PlatformAdminResponse {
 
     private UUID id;
     private String email;
@@ -24,8 +24,8 @@ public class UniversityAdminResponse {
     private Role role;
     private AccountStatus status;
 
-    public static UniversityAdminResponse from(UniversityAdminProfile profile, AuthUserResponse auth) {
-        return UniversityAdminResponse.builder()
+    public static PlatformAdminResponse from(PlatformAdminProfile profile, AuthUserResponse auth) {
+        return PlatformAdminResponse.builder()
                 .id(profile.getId())
                 .email(profile.getEmail())
                 .firstName(profile.getFirstName())

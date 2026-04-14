@@ -2,13 +2,14 @@ package com.campus2company.admin.service;
 
 import com.campus2company.admin.client.AuthPlatformClient;
 import com.campus2company.admin.dto.AuthUserResponse;
-import com.campus2company.admin.dto.CreateUniversityAdminRequest;
-import com.campus2company.admin.dto.ProvisionUniversityAdminAuthRequest;
-import com.campus2company.admin.dto.UniversityAdminResponse;
+import com.campus2company.admin.dto.CreatePlatformAdminRequest;
+import com.campus2company.admin.dto.PlatformAdminResponse;
+import com.campus2company.admin.dto.ProvisionPlatformAdminAuthRequest;
 import com.campus2company.admin.exception.ApiException;
-import com.campus2company.admin.model.UniversityAdminProfile;
-import com.campus2company.admin.repository.UniversityAdminProfileRepository;
+import com.campus2company.admin.model.PlatformAdminProfile;
+import com.campus2company.admin.repository.PlatformAdminProfileRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,20 +23,20 @@ import java.util.UUID;
 public class AdminOperationsService {
 
     private final AuthPlatformClient authPlatformClient;
-    private final UniversityAdminProfileRepository universityAdminProfileRepository;
+    private final PlatformAdminProfileRepository platformAdminProfileRepository;
 
     @Transactional
-    public UniversityAdminResponse createUniversityAdmin(
-            CreateUniversityAdminRequest request,
+    public PlatformAdminResponse createPlatformAdmin(
+            CreatePlatformAdminRequest request,
             String authorizationHeader) {
 
         String normalizedEmail = request.getEmail().toLowerCase().trim();
-        if (universityAdminProfileRepository.existsByEmail(normalizedEmail)) {
+        if (platformAdminProfileRepository.existsByEmail(normalizedEmail)) {
             throw new ApiException("A university admin with this email already exists", HttpStatus.CONFLICT);
         }
 
         UUID id = UUID.randomUUID();
-        UniversityAdminProfile profile = UniversityAdminProfile.builder()
+        PlatformAdminProfile profile = PlatformAdminProfile.builder()
                 .id(id)
                 .email(normalizedEmail)
                 .firstName(request.getFirstName())
@@ -44,17 +45,22 @@ public class AdminOperationsService {
                 .createdAt(Instant.now())
                 .build();
 
-        universityAdminProfileRepository.save(profile);
+        try {
+            // Flush now so unique-email violations are raised before auth provisioning.
+            platformAdminProfileRepository.saveAndFlush(profile);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ApiException("A university admin with this email already exists", HttpStatus.CONFLICT);
+        }
 
         try {
-            ProvisionUniversityAdminAuthRequest authBody = new ProvisionUniversityAdminAuthRequest(
+            ProvisionPlatformAdminAuthRequest authBody = new ProvisionPlatformAdminAuthRequest(
                     id,
                     normalizedEmail,
                     request.getPassword());
-            AuthUserResponse auth = authPlatformClient.provisionUniversityAdmin(authBody, authorizationHeader);
-            return UniversityAdminResponse.from(profile, auth);
+            AuthUserResponse auth = authPlatformClient.provisionPlatformAdmin(authBody, authorizationHeader);
+            return PlatformAdminResponse.from(profile, auth);
         } catch (RuntimeException ex) {
-            universityAdminProfileRepository.deleteById(id);
+            platformAdminProfileRepository.deleteById(id);
             throw ex;
         }
     }

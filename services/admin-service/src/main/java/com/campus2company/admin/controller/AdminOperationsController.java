@@ -1,8 +1,8 @@
 package com.campus2company.admin.controller;
 
 import com.campus2company.admin.dto.AuthUserResponse;
-import com.campus2company.admin.dto.CreateUniversityAdminRequest;
-import com.campus2company.admin.dto.UniversityAdminResponse;
+import com.campus2company.admin.dto.CreatePlatformAdminRequest;
+import com.campus2company.admin.dto.PlatformAdminResponse;
 import com.campus2company.admin.service.AdminOperationsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,13 +34,13 @@ public class AdminOperationsController {
 
     private final AdminOperationsService adminOperationsService;
 
-    @PostMapping("/university-admins")
-    @Operation(summary = "Create a university admin",
+    @PostMapping("/platform-admins")
+    @Operation(summary = "Create a platform admin profile",
             description = "Stores profile in admin-service and provisions UNIVERSITY_ADMIN in auth-service with the same user id.")
-    public ResponseEntity<UniversityAdminResponse> createUniversityAdmin(
+    public ResponseEntity<PlatformAdminResponse> createPlatformAdmin(
             @RequestHeader("Authorization") String authorization,
-            @Valid @RequestBody CreateUniversityAdminRequest request) {
-        UniversityAdminResponse body = adminOperationsService.createUniversityAdmin(request, authorization);
+            @Valid @RequestBody CreatePlatformAdminRequest request) {
+        PlatformAdminResponse body = adminOperationsService.createPlatformAdmin(request, authorization);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 

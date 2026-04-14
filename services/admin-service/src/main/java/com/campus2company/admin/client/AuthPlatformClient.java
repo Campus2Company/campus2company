@@ -1,7 +1,7 @@
 package com.campus2company.admin.client;
 
 import com.campus2company.admin.dto.AuthUserResponse;
-import com.campus2company.admin.dto.ProvisionUniversityAdminAuthRequest;
+import com.campus2company.admin.dto.ProvisionPlatformAdminAuthRequest;
 import com.campus2company.admin.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class AuthPlatformClient {
 
     private final RestClient authRestClient;
 
-    public AuthUserResponse provisionUniversityAdmin(ProvisionUniversityAdminAuthRequest body, String authorizationHeader) {
+    public AuthUserResponse provisionPlatformAdmin(ProvisionPlatformAdminAuthRequest body, String authorizationHeader) {
         return postJson("/admin/university-admins", body, authorizationHeader, AuthUserResponse.class);
     }
 

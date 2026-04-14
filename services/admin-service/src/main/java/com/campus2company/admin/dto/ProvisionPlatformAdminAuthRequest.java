@@ -12,7 +12,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProvisionUniversityAdminAuthRequest {
+public class ProvisionPlatformAdminAuthRequest {
 
     private UUID id;
     private String email;
